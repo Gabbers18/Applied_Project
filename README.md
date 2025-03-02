@@ -12,6 +12,10 @@ patterns between multiple people that may have been overlooked by human observer
 techniques to extract motion energies of each individual in the task. The goal of these analyses is to identify anomalies or patterns that 
 may be important to know for training purposes or within other contexts (Angus et al., 2012).
 
+
+## Contents
+
+This repository contains the original survey data, data extracted from the viedos (Motion Energy data), the R code for analyses conducted, and results extracted from analyses.
 ## Section 1
 ### Motion Energy Analysis (MEA)
 Motion Energy Analysis was developed by Ramseyer in 2019. MEA is a non-invasive method of developed by  extracting frame-by-frame differences in movement from video data. This method is especially useful when trying to analyze nonverbal behavior. 
