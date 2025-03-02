@@ -45,14 +45,10 @@ _More information on this package can be found at [this link.](https://github.co
 <img width="606" alt="Screenshot 2025-03-01 at 9 05 37 PM" src="https://github.com/user-attachments/assets/250322d5-5d7c-40a8-91bf-08cba61b97d7" />
 
 
-## Section 3 - Optional inclusion in the GitHub
+## Section 3
 ### Examining Persuasion
 We will be examining underlying patterns of persuasion within the interactions by calculating/examining a few measures of persuasion. We will be using Spearman's Rank Correlation Coefficient as a measure of the strength and direction of the association between two ranked lists. 
 
 **The dataset:**
 [cleaned_with_participant_numbers (1) (1).csv.zip](https://github.com/user-attachments/files/17985395/cleaned_with_participant_numbers.1.1.csv.zip)
-
-
-## Section 4
-### Conducting the Analysis
 
