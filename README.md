@@ -1,5 +1,6 @@
 # Applied Project (Fall 2023-Spring 2025)
 
+## Overview
 This study utilizes MEA in conjuction with CRQA to conduct continuous data anlaysis on experimental data.
 
 This study seeks to uncover the reasoning behind how people coordinate movements and language through a common task. 
