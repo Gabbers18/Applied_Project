@@ -23,7 +23,7 @@ library(scales)
 # MEA is a non-invasive method of developed by extracting frame-by-frame differences in movement from video data. 
 # This method is especially useful when trying to analyze nonverbal behavior from video data
 ```{r MEA}
-mea_normal <- readMEA("/Users/gabrielleyoung/Desktop/DataAP/TxtFiles_cleaned", 
+mea_normal <- readMEA("your_file_path", 
 sampRate = 25, s1Col = 2, s2Col = 1,
                      s1Name = "Participant2", s2Name = "Participant1", skip=1,
                      idOrder = c("id","session"), idSep="_")
@@ -324,7 +324,7 @@ run_crqa_for_dyads <- function(df_list, cross_rescale_type, average_delay, avera
 
 ``` {r run-all}
 # Define folder path
-MEA_folder_path2 <- "/Users/gabrielleyoung/Desktop/DataAP/Individual_MEA_Files2"
+MEA_folder_path2 <- "your_file_path"
 
 # List all .txt files
 txt_files <- list.files(path = MEA_folder_path2, pattern = "\\.txt$", full.names = TRUE)
@@ -389,7 +389,7 @@ print(head(clean_results))
 clean_results <- clean_results %>%
   mutate(across(where(is.list), ~sapply(., function(x) paste(unlist(x), collapse = ", "))))  # Flatten list columns
 
-write.csv(clean_results, file = "/Users/gabrielleyoung/Desktop/Final_CRQA_Results.csv", row.names = FALSE)
+write.csv(clean_results, file = "your_file_path", row.names = FALSE)
 ```
 
 
@@ -444,9 +444,9 @@ ggplot(sample_clean_long, aes(x = Dyad, y = Value, fill = Dyad)) +
 
 #Displaying Time Series Data
 ```{r example-brown-bag-dyad-102}
-path_normal102 <- read.table("/Users/gabrielleyoung/Desktop/DataAP/TxtFiles/MEA_video102.txt", quote="\"", comment.char="")
+path_normal102 <- read.table("your_file_path", quote="\"", comment.char="")
 path_normal102 <- as.numeric(path_normal102$V1)
-output_file_path <- "/Users/gabrielleyoung/Desktop/DataAP/TxtFiles/MEA_video102.txt"
+output_file_path <- "your_file_path"
 
 # Save the dataframe as a tab-delimited text file
 write.table(path_normal102, file = output_file_path, sep = "\t", quote = FALSE, row.names = FALSE)
@@ -454,19 +454,19 @@ write.table(path_normal102, file = output_file_path, sep = "\t", quote = FALSE, 
 
 # Use the temporary file as input to readMEA function
 
-mea_normal102 <- readMEA("/Users/gabrielleyoung/Desktop/DataAP/TxtFiles/MEA_video102.txt", sampRate = 25, s1Col = 1:1, s2Col = 2:2,
+mea_normal102 <- readMEA("your_file_path", sampRate = 25, s1Col = 1:1, s2Col = 2:2,
                         s1Name = "Participant1", s2Name = "Participant2", skip = 1,
                         idOrder = c("id", "session"), idSep = "_")
 
 
 diagnosticPlot(mea_normal102[[1]])
 
-mea_normal102_1 <- readMEA("/Users/gabrielleyoung/Desktop/DataAP/TxtFiles/MEA_video102.txt", sampRate = 25, s1Col = 1:1, s2Col = 1:1,
+mea_normal102_1 <- readMEA("your_file_path", sampRate = 25, s1Col = 1:1, s2Col = 1:1,
                         s1Name = "Participant1", s2Name = NA, skip = 1,
                         idOrder = c("id", "session"), idSep = "_")
 
 
-mea_normal102_2 <- readMEA("/Users/gabrielleyoung/Desktop/DataAP/TxtFiles/MEA_video102.txt", sampRate = 25, s1Col = 2:2, s2Col = 2:2,
+mea_normal102_2 <- readMEA("your_file_path", sampRate = 25, s1Col = 2:2, s2Col = 2:2,
                         s1Name = NA, s2Name = "Participant2", skip = 1,
                         idOrder = c("id", "session"), idSep = "_")
 
@@ -570,7 +570,7 @@ crqa_df <- data.frame(
 )
 
 # Export the results to a CSV file
-write.csv(crqa_df, file = "/Users/gabrielleyoung/Desktop/DataAP/crqa_results.csv", row.names = FALSE)
+write.csv(crqa_df, file = "your_file_path", row.names = FALSE)
 
 ```
 
