@@ -1,4 +1,4 @@
-## Applied Project (Fall 2023-Spring 2025)
+# Applied Project (Fall 2023-Spring 2025)
 
 This study utilizes MEA in conjuction with CRQA to conduct continuous data anlaysis on experimental data.
 
