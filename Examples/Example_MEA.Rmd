@@ -1,0 +1,46 @@
+---
+title: "Single-MEA-Example"
+output: pdf_document
+date: "2024-09-23"
+---
+
+```{r setup, include=FALSE}
+library(rMEA)
+```
+
+## Part 1: Motion Energy Analysis
+
+## Dyad 16
+
+# MEA is a non-invasive method of developed by extracting frame-by-frame differences in movement from video data. 
+# This method is especially useful when trying to analyze nonverbal behavior from video data
+```{r MEA}
+# The output of Ramseyer's MEA is a txt file. We will visualize the MEA using txt
+# files first.
+read_mea_dyad_16 <- readMEA("/Users/gabrielleyoung/Desktop/DataAP/TxtFiles_cleaned/MEA_video16.txt", 
+sampRate = 25, s1Col = 2, s2Col = 1,
+                     s1Name = "Participant2", s2Name = "Participant1", skip=1,
+                     idOrder = c("id","session"), idSep="_")
+```
+
+# Participant time series data from 5 sample dyads.
+```{r example-dyads}
+diagnosticPlot(read_mea_dyad_16[[1]])
+```
+
+```{r save-file}
+write.csv(read_mea_dyad_16[[1]]$MEA, file = "dyad_16_MEA.csv", row.names = FALSE)
+```
+
+```{r read-csv}
+# We can also use MEA to read csv timeseries data
+csv_read_mea_dyad_16 <- readMEA("/Users/gabrielleyoung/Desktop/dyad_16_MEA.csv", 
+sampRate = 25, s1Col = 2, s2Col = 1,
+                     s1Name = "Participant2", s2Name = "Participant1", skip=1,
+                     idOrder = c("id","session"), idSep="_", sep = ",")
+```
+
+```{r}
+diagnosticPlot(csv_read_mea_dyad_16[[1]])
+```
+

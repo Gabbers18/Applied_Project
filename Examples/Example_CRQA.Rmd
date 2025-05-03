@@ -1,0 +1,141 @@
+---
+title: "Single-CRQA-With-csv-Dataset"
+output: pdf_document
+date: "2024-09-23"
+---
+
+```{r setup, include=FALSE}
+library(plyr)
+library(crqa)
+library(dplyr)
+library(rMEA)
+library(tseriesChaos)
+library(ggplot2)
+```
+
+# Part 2: Cross Recurrence Quantification Analysis (CRQA) 
+
+# This method is used to capture the dynamics between two people. It is used to quantify patterns in 
+# language and movement. It captures non-linear patterns and synchorny over time. 
+```{r sample-dataset}
+dyad16_data <- read.csv("/Users/gabrielleyoung/Desktop/dyad_16_MEA.csv")
+
+ts_participant1 <- dyad16_data$Participant1  # Time series for Participant 1
+ts_participant2 <- dyad16_data$Participant2 
+```
+
+# DETERMINE PARAMETERS - For a Single Dyad 
+```{r determine-parameters}
+cross_theiler_window = 0
+cross_rescale_type = 'mean'
+# rec_rescale_type = 'max'
+```
+
+```{r determine-delay}
+cross_ami_p1 = mutual(ts_participant1s,
+                 lag.max = 800)
+
+cross_ami_p2 = mutual(ts_participant2s,
+                     lag.max = 800)
+
+
+find_first_minimum <- function(ami_values) {
+  for (i in 2:(length(ami_values) - 1)) {
+    if (ami_values[i] < ami_values[i - 1] && ami_values[i] < ami_values[i + 1]) {
+      return(i)  # Return the lag corresponding to the first local minimum
+    }
+  }
+  return(NULL)  # Return NULL if no minimum is found
+}
+
+# Apply the function to both participants
+chosen_delay_p1 = find_first_minimum(cross_ami_p1)
+chosen_delay_p2 = find_first_minimum(cross_ami_p2)
+
+cross_chosen_delay = round(mean(c(chosen_delay_p1, chosen_delay_p2)))
+
+cross_remaining_mutual_info_p1 = cross_ami_p1[cross_chosen_delay]
+cross_remaining_mutual_info_p2 = cross_ami_p2[cross_chosen_delay]
+```
+
+```{r determine-embedding-d}
+cross_max_embedding = 10
+cross_fnn_p1 = false.nearest(ts_participant1s,
+                            m = cross_max_embedding,
+                            d = cross_chosen_delay,
+                            t = cross_theiler_window)
+
+# determine embedding
+cross_fnn_p2 = false.nearest(ts_participant2s,
+                            m = cross_max_embedding,
+                            d = cross_chosen_delay,
+                            t = cross_theiler_window)
+plot(cross_fnn_p1)
+plot(cross_fnn_p2)
+
+cross_chosen_embedding = 5
+cross_remaining_fnn_p1 = cross_fnn_p1[cross_chosen_embedding]
+cross_remaining_fnn_p2 = cross_fnn_p2[cross_chosen_embedding]
+```
+
+```{r select-radius}
+if (cross_rescale_type == 'mean'){
+  rescaled_p1 = ts_participant1s / mean(ts_participant1s)
+  rescaled_p2 = ts_participant2s / mean(ts_participant2s)
+} else if (cross_rescale_type == 'max'){
+  rescaled_p1 = ts_participant1s / max(ts_participant1s)
+  rescaled_p2 = ts_participant2s / max(ts_participant2s)
+}
+```
+
+```{r run-crqa-single-dyad}
+crqa_analysis = crqa(ts1 = rescaled_p1, 
+                    ts2 = rescaled_p2,
+                    delay = cross_chosen_delay, 
+                    embed = cross_chosen_embedding, 
+                    r = .1, # you can keep playing with this to find something that works
+                    normalize = 0, 
+                    rescale = 0, # distance matrix rescaling option -- see documentation
+                    mindiagline = 2,
+                    minvertline = 2, 
+                    tw = cross_theiler_window, 
+                    whiteline = FALSE,
+                    recpt=FALSE)
+```
+
+#RESULTS FOR CRQA SAMPLE
+```{r print-sample-results}
+crqa_analysis$RR # rate of recurrence
+crqa_analysis$DET # % determinism
+crqa_analysis$NRLINE # total number of lines on the plot
+crqa_analysis$maxL # maximum line length on plot
+crqa_analysis$L # average line length on plot
+crqa_analysis$ENTR # entropy
+crqa_analysis$rENTR # normalized entropy
+crqa_analysis$LAM # laminarity
+crqa_analysis$TT # trapping time
+```
+
+```{r plot-sample-dyad}
+# CRQA Plot for Single Dyad - Dyad 16
+par = list(unit = 2, 
+           labelx = "x-axis movement", 
+           labely = "y-axis movement", 
+           cols = "red", 
+           pcex = 1)
+plotRP(crqa_analysis$RP, par)
+```
+
+```{r plot}
+crqa_df = data.frame(points = crqa_analysis$RP@i,
+                           loc = seq_along(crqa_analysis$RP@i))
+ggplot(crqa_df,aes(x=points,
+                        y=loc)) +
+  geom_point(color="black",size=.01) +
+  theme_classic() +
+  theme(legend.position="none", axis.text.x = element_blank(), axis.text.y = element_blank()) +
+  ylab("Participant 2") + xlab("Participant 1") +
+  ggtitle("Dyad 16\nCross-recurrence Plot between\nParticipant 1 and Participant 2 Movement in Survivor Task")
+```
+
+
