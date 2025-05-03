@@ -10,7 +10,8 @@ library(rMEA)
 
 ## Part 1: Motion Energy Analysis
 
-## Dyad 16
+## Example 1
+### Dyad 16
 
 # MEA is a non-invasive method of developed by extracting frame-by-frame differences in movement from video data. 
 # This method is especially useful when trying to analyze nonverbal behavior from video data
@@ -31,6 +32,10 @@ diagnosticPlot(read_mea_dyad_16[[1]])
 ```{r save-file}
 write.csv(read_mea_dyad_16[[1]]$MEA, file = "dyad_16_MEA.csv", row.names = FALSE)
 ```
+
+
+## Example 2
+### Dyad 16
 
 ```{r read-csv}
 # We can also use MEA to read csv timeseries data
