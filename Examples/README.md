@@ -4,6 +4,10 @@ Within this folder, you can find a few examples of how to perform CRQA utilizing
 
 
 # MEA
+
+## RMD File
+You can find the corresponding .rmd file for our motion energy analysis example [here](https://github.com/Gabbers18/Applied_Project/blob/main/Examples/Example_MEA.Rmd).
+
 ## Libraries
 - rMEA
 
@@ -42,5 +46,33 @@ Within this example, we will be utilizing a series of sample datasets, which cor
 
 
 # CRQA
+
+## RMD File
+You can find the corresponding .rmd file for our motion energy analysis example [here](https://github.com/Gabbers18/Applied_Project/blob/main/Examples/Example_CRQA.Rmd).
+
+## Libraries
+- plyr
+- crqa
+- dplyr
+- tseriesChaos 
+- ggplot2
+
+## Useful function for large datasets
+
+I utilized this function to extract the middle 60% of the time series; consider using this function or something similar to sample your large datasets.
+
+I recieved this warning, which led to troubleshooting a method to sampling my datasets:
+Warning: sparse->dense coercion: allocating vector of size 1.2 GiBError: vector memory exhausted (limit reached?)
+
+This warning will usually appear if you are working with large timeseries datasets with **more than 12000 rows** within the CRQA function.
+
+```{r function-for-all-data}
+get_middle_60_percent <- function(time_series) {
+  total_length <- length(time_series)
+  start_index <- floor(0.2 * total_length) + 1
+  end_index <- ceiling(0.8 * total_length)
+  return(time_series[start_index:end_index])
+}
+```
 
 
