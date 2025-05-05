@@ -75,15 +75,29 @@ This is because you can run CRQA with any time series data.
 - embedding dimenson
 - radius
 
-### Inital parameters to set
-- set cross theiler window to 0
+### Cross Theiler Window 
+to 0
 - set rescale type to mean for continuous data
 
-### Parameters 
+### Radius
+
+Radius is a threshold value in CRQA that determines how close two points in phase space must be to count as a recurrence (i.e., considered “similar”).
+
+### How Radius is Determined:
+
+* The **radius defines the sensitivity** of recurrence detection:
+
+  * **Smaller radius** = only very similar points are considered recurrent (may result in low recurrence rates).
+  * **Larger radius** = more points are considered recurrent, including less similar ones (may result in overly high recurrence).
+* The goal is to choose a radius that produces a **recurrence rate (RR)** within an interpretable and consistent range—often around **2–5%**, but this can vary by study.
+
+In this case I chose to set a radius of 0.1 to decrease the sensitivity to recurrent points in this data.
+
+### Parameters to calculate
 1) Delay
 2) Embedding Dimension
 
-### 1) Delay
+### Delay
 Delay is a parameter set within CRQA which refer to the time lag between data points used to reconstruct the phase space of a time series. It determines how far apart in time the data points are when assessing their similarity or synchronization.
 
 Delay is a parameter used in CRQA that refers to the **time lag between data points** used to reconstruct the phase space of a time series. It determines how far apart in time the data points are when assessing similarity or synchronization.
@@ -114,7 +128,7 @@ find_first_minimum <- function(ami_values) {
 optimal_delay <- find_first_minimum(ami_values)
 ```
 
-## 2) Embedding Dimension
+### Embedding Dimension
 
 The embedding dimension determines the **number of consecutive data points** used to reconstruct the system’s state space. It captures how many dimensions are needed to unfold the underlying dynamics of the system without overlaps or false trajectories.
 
