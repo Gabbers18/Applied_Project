@@ -89,7 +89,7 @@ This is because you can run CRQA with any time series data.
 - embedding dimenson
 - radius
 
-## Results - Outcome variables from CRQA
+## Results - Outcome Variables
 - rate of recurrence
 - determinism
 - total number of lines on the plot
@@ -211,7 +211,31 @@ The average length of vertical lines, representing how long interactions remain 
 A trapping time of 5.14 suggests that, on average, the participants remained in similar states for short durations, indicating brief periods of stability in their interaction.
 
 
+## Example Visualization
+For this example, I chose to include two methods of visualizing the analysis. The first method utilizes the function 'plotRP()' which is from the 'crqa' library. The second method I used 'ggplot.'
 
+### Plotting Method 1
+```{r plot-sample-dyad}
+# CRQA Plot for Single Dyad - Dyad 16
+par = list(unit = 2, 
+           labelx = "x-axis movement", 
+           labely = "y-axis movement", 
+           cols = "red", 
+           pcex = 1)
+plotRP(crqa_analysis$RP, par)
+```
 
+### Plotting Method 2
+```{r plot}
+crqa_df = data.frame(points = crqa_analysis$RP@i,
+                           loc = seq_along(crqa_analysis$RP@i))
+ggplot(crqa_df,aes(x=points,
+                        y=loc)) +
+  geom_point(color="black",size=.01) +
+  theme_classic() +
+  theme(legend.position="none", axis.text.x = element_blank(), axis.text.y = element_blank()) +
+  ylab("Participant 2") + xlab("Participant 1") +
+  ggtitle("Dyad 16\nCross-recurrence Plot between\nParticipant 1 and Participant 2 Movement in Survivor Task")
+```
 
 
