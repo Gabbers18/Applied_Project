@@ -24,9 +24,7 @@ ts_participant2 <- dyad16_data$Participant2
 ```
 
 ```{r function-for-all-data}
-# Function to extract the middle 60% of the time series; consider using this 
-# function if you receive: Warning: sparse->dense coercion: allocating vector of 
-# size 1.2 GiBError: vector memory exhausted (limit reached?)
+# Function to extract the middle 60% of the time series
 
 # This warning will usually appear if you are working with large timeseries
 # datasets with more than 12000 rows
