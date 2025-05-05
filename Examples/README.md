@@ -47,6 +47,9 @@ Within this example, we will be utilizing a series of sample datasets, which cor
 
 # CRQA
 
+## What is CRQA?
+Cross Recurrence Quantification Analysis (CRQA) captures the dynamics between two people. It is used to quantify patterns in language and movement. It captures non-linear patterns and synchorny over time. 
+
 ## RMD File
 You can find the corresponding .rmd file for our motion energy analysis example [here](https://github.com/Gabbers18/Applied_Project/blob/main/Examples/Example_CRQA.Rmd).
 
@@ -57,23 +60,6 @@ You can find the corresponding .rmd file for our motion energy analysis example 
 - tseriesChaos 
 - ggplot2
 
-## Useful function for large datasets
-
-I utilized this function to extract the middle 60% of the time series; consider using this function or something similar to sample your large datasets.
-
-I recieved this warning, which led to troubleshooting a method to sampling my datasets:
-Warning: sparse->dense coercion: allocating vector of size 1.2 GiBError: vector memory exhausted (limit reached?)
-
-This warning will usually appear if you are working with large timeseries datasets with **more than 12000 rows** within the CRQA function.
-
-```{r function-for-all-data}
-get_middle_60_percent <- function(time_series) {
-  total_length <- length(time_series)
-  start_index <- floor(0.2 * total_length) + 1
-  end_index <- ceiling(0.8 * total_length)
-  return(time_series[start_index:end_index])
-}
-```
 
 ## The data
 I chose to utilize the .csv formatted data for simplicity purposes for this analysis.
@@ -88,6 +74,88 @@ This is because you can run CRQA with any time series data.
 - delay
 - embedding dimenson
 - radius
+
+### Inital parameters to set
+- set cross theiler window to 0
+- set rescale type to mean for continuous data
+
+### Parameters 
+1) Delay
+2) Embedding Dimension
+
+### 1) Delay
+Delay is a parameter set within CRQA which refer to the time lag between data points used to reconstruct the phase space of a time series. It determines how far apart in time the data points are when assessing their similarity or synchronization.
+
+Delay is a parameter used in CRQA that refers to the **time lag between data points** used to reconstruct the phase space of a time series. It determines how far apart in time the data points are when assessing similarity or synchronization.
+
+### How Delay is Determined:
+
+* Calculated using **Average Mutual Information (AMI)**.
+* AMI measures the amount of shared information between the original time series and its delayed version.
+* The **first local minimum** in the AMI curve indicates the optimal delay—this is the point where each successive data point provides the most new information.
+
+### Example in R:
+
+```r
+# Calculate AMI for participant time series up to lag 800
+ami_values <- mutual(ts_data, lag.max = 800)
+
+# Identify first local minimum of AMI
+find_first_minimum <- function(ami_values) {
+  for (i in 2:(length(ami_values) - 1)) {
+    if (ami_values[i] < ami_values[i - 1] && ami_values[i] < ami_values[i + 1]) {
+      return(i)
+    }
+  }
+  return(NULL)
+}
+
+# Get optimal delay
+optimal_delay <- find_first_minimum(ami_values)
+```
+
+## 2) Embedding Dimension
+
+The embedding dimension determines the **number of consecutive data points** used to reconstruct the system’s state space. It captures how many dimensions are needed to unfold the underlying dynamics of the system without overlaps or false trajectories.
+
+### How Embedding Dimension is Determined:
+
+* Typically selected using the **False Nearest Neighbors (FNN)** algorithm.
+* FNN identifies the minimum number of dimensions where false neighbors (points that appear close due to projection in low dimensions) are minimized.
+* The optimal embedding dimension is where the **percentage of false neighbors drops to near zero or levels off**, meaning the system’s dynamics are well represented.
+
+### Example in R:
+
+```r
+# Calculate FNN with previously selected delay
+fnn_values <- false.nearest(ts_data, m = 20, d = optimal_delay, t = 0)
+
+# Extract the fraction of false neighbors
+fraction_values <- as.numeric(fnn_values["fraction", ])
+fraction_values <- fraction_values[!is.na(fraction_values)]
+
+# Find the first local minimum (drop in false neighbors)
+embedding_dimension <- which(diff(sign(diff(fraction_values))) > 0) + 1
+embedding_dimension <- embedding_dimension[1]
+```
+
+## Useful function for large datasets
+
+I utilized this function to extract the middle 60% of the time series; consider using this function or something similar to sample your large datasets.
+
+I recieved this warning, which led to troubleshooting a method to sampling my datasets:
+Warning: sparse->dense coercion: allocating vector of size 1.2 GiBError: vector memory exhausted (limit reached?)
+
+This warning will usually appear if you are working with large timeseries datasets with **more than 12000 rows** within the CRQA function.
+
+```r
+get_middle_60_percent <- function(time_series) {
+  total_length <- length(time_series)
+  start_index <- floor(0.2 * total_length) + 1
+  end_index <- ceiling(0.8 * total_length)
+  return(time_series[start_index:end_index])
+}
+```
 
 ## Results - Outcome Variables
 - rate of recurrence
@@ -215,7 +283,7 @@ A trapping time of 5.14 suggests that, on average, the participants remained in 
 For this example, I chose to include two methods of visualizing the analysis. The first method utilizes the function 'plotRP()' which is from the 'crqa' library. The second method I used 'ggplot.'
 
 ### Plotting Method 1
-```{r plot-sample-dyad}
+```r
 # CRQA Plot for Single Dyad - Dyad 16
 par = list(unit = 2, 
            labelx = "x-axis movement", 
@@ -226,7 +294,7 @@ plotRP(crqa_analysis$RP, par)
 ```
 
 ### Plotting Method 2
-```{r plot}
+```r
 crqa_df = data.frame(points = crqa_analysis$RP@i,
                            loc = seq_along(crqa_analysis$RP@i))
 ggplot(crqa_df,aes(x=points,
