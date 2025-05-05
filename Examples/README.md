@@ -75,4 +75,66 @@ get_middle_60_percent <- function(time_series) {
 }
 ```
 
+## The data
+I chose to utilize the .csv formatted data for simplicity purposes for this analysis.
+This is because you can run CRQA with any time series data.
+
+-[.csv data](https://github.com/Gabbers18/Applied_Project/blob/main/Examples/Example_Datasets/dyad_16_MEA.csv)
+
+## Setting Parameters for the Analysis
+
+### Our parameters
+- cross theiler window
+- delay
+- embedding dimenson
+- radius
+
+## Results
+- rate of recurrence
+- determinism
+- total number of lines on the plot
+- maximum line length on plot
+- average line length on plot
+- entropy
+- normalized entropy
+- laminarity
+- trapping time
+
+## Results interpretation
+1) <ins>RR: Recurrence Rate<ins>
+
+The percentage of time points where both participants exhibit the same or similar states. Higher values indicate stronger coordination.
+
+2) <ins>DET: Determinism<ins>
+
+The proportion of recurrent points that form diagonal lines, reflecting structured and predictable behavior in the interaction. Higher values suggest more patterned coordination.
+
+3) <ins>NRLINE: Number of Diagonal Lines<ins>
+
+Counts the number of diagonal line structures in the recurrence plot, indicating sequences of shared states.
+
+4) <ins>maxL: Maximum Line Length<ins>
+The longest diagonal line in the recurrence plot, representing the longest uninterrupted period of synchronization.
+
+ 5) <ins>L: Average Line Length<ins>
+
+The mean length of diagonal lines, indicating the average duration of coordinated sequences. Higher values suggest greater interaction stability.
+
+ 6) <ins>ENTR: Entropy of Line Lengths<ins>
+
+Measures the variability in diagonal line lengths, reflecting the complexity or predictability of coordination patterns.
+
+7) <ins>rENTR: Relative Entropy<ins>
+
+Normalized entropy value, comparing the structure of the recurrence to a baseline or expected distribution.
+
+8) <ins>LAM: Laminarity<ins>
+
+The percentage of recurrent points forming vertical lines, capturing intermittent coordination or pauses in movement. Higher values suggest periods of engagement followed by disengagement.
+
+ 9) <ins>TT: Trapping Time<ins>
+
+The average length of vertical lines, representing how long interactions remain in a stable state before shifting. Longer times indicate sustained coordination.
+
+
 
