@@ -17,7 +17,7 @@ library(ggplot2)
 # This method is used to capture the dynamics between two people. It is used to quantify patterns in 
 # language and movement. It captures non-linear patterns and synchorny over time. 
 ```{r sample-dataset}
-dyad16_data <- read.csv("/Users/gabrielleyoung/Desktop/dyad_16_MEA.csv")
+dyad16_data <- read.csv("your_path_here_to_sample_data")
 
 ts_participant1 <- dyad16_data$Participant1  # Time series for Participant 1
 ts_participant2 <- dyad16_data$Participant2 
