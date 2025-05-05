@@ -14,8 +14,6 @@ library(ggplot2)
 
 # Part 2: Cross Recurrence Quantification Analysis (CRQA) 
 
-# This method is used to capture the dynamics between two people. It is used to quantify patterns in 
-# language and movement. It captures non-linear patterns and synchorny over time. 
 ```{r sample-dataset}
 dyad16_data <- read.csv("your_path_here_to_sample_data")
 
