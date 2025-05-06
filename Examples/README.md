@@ -341,9 +341,9 @@ The average length of vertical lines, representing how long interactions remain 
 A trapping time of 5.14 suggests that, on average, the participants remained in similar states for short durations, indicating brief periods of stability in their interaction.
 
 
-### Appendix
+## Appendix
 
-## Metrics Glossary
+### Metrics Glossary
 1) <ins>RR: Recurrence Rate<ins>
 
 The percentage of time points where both participants exhibit the same or similar states. Higher values indicate stronger coordination.
