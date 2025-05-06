@@ -76,22 +76,21 @@ This is because you can run CRQA with any time series data.
 - radius
 
 ### Cross Theiler Window 
-to 0
-- set rescale type to mean for continuous data
-
+- set to 0; 0 means no exclusion of points
+- set rescale type to mean as a method of normalizing the time series before computing distances
+  
 ## Radius
 
-Radius is a threshold value in CRQA that determines how close two points in phase space must be to count as a recurrence (i.e., considered “similar”).
+Radius is a threshold value in CRQA that determines how close two points in phase space must be to count as a recurrence (i.e., considered “similar”). The radius defines the sensitivity of recurrence detection.
 
-### How Radius is Determined:
+### Significance of radius values:
 
-* The **radius defines the sensitivity** of recurrence detection:
+* Smaller radius: only very similar points are considered recurrent (may result in low recurrence rates).
+* Larger radius: more points are considered recurrent, including less similar ones (may result in overly high recurrence).
+    
+Overall, the goal is to choose a radius that produces a **recurrence rate (RR)** within an interpretable and consistent range—often around **2–5%**, but this can vary by study.
 
-  * **Smaller radius** = only very similar points are considered recurrent (may result in low recurrence rates).
-  * **Larger radius** = more points are considered recurrent, including less similar ones (may result in overly high recurrence).
-* The goal is to choose a radius that produces a **recurrence rate (RR)** within an interpretable and consistent range—often around **2–5%**, but this can vary by study.
-
-In this case I chose to set a radius of 0.1 to decrease the sensitivity to recurrent points in this data.
+In this case I chose a radius of **0.1**. This small value **increases** the sensitivity to recurrent points in this data. This stricter criteria means our analysis will be more sensitive to smaller differences in the data.
 
 ### Parameters to calculate
 1) Delay
