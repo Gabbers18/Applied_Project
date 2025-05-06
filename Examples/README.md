@@ -65,20 +65,29 @@ You can find the corresponding .rmd file for our motion energy analysis example 
 I chose to utilize the .csv formatted data for simplicity purposes for this analysis.
 This is because you can run CRQA with any time series data.
 
--[.csv data](https://github.com/Gabbers18/Applied_Project/blob/main/Examples/Example_Datasets/dyad_16_MEA.csv)
+- [CSV data](https://github.com/Gabbers18/Applied_Project/blob/main/Examples/Example_Datasets/dyad_16_MEA.csv)
 
 ## Setting Parameters for the Analysis
 
 ### Our parameters
-- cross theiler window
+- theiler window
 - delay
 - embedding dimenson
 - radius
+- rescale type
 
-### Cross Theiler Window 
-- set to 0; 0 means no exclusion of points
-- set rescale type to mean as a method of normalizing the time series before computing distances
-  
+## Theiler Window
+- Theiler window excludes near-diagonal points from being counted as recurrences
+- Set to 0
+- 0 means no exclusion of points
+- we will use this later when determining embedding dimension
+
+### Example in R:
+
+```r
+cross_theiler_window = 0
+```
+
 ## Radius
 
 Radius is a threshold value in CRQA that determines how close two points in phase space must be to count as a recurrence (i.e., considered “similar”). The radius defines the sensitivity of recurrence detection.
@@ -92,9 +101,22 @@ Overall, the goal is to choose a radius that produces a **recurrence rate (RR)**
 
 In this case I chose a radius of **0.1**. This small value **increases** the sensitivity to recurrent points in this data. This stricter criteria means our analysis will be more sensitive to smaller differences in the data.
 
-### Parameters to calculate
-1) Delay
-2) Embedding Dimension
+### Example in R:
+
+```r
+crqa_analysis = crqa(ts1 = rescaled_p1, 
+                    ts2 = rescaled_p2,
+                    delay = cross_chosen_delay, 
+                    embed = cross_chosen_embedding, 
+                    r = .1, # we are looking at this value!
+                    normalize = 0, 
+                    rescale = 0,
+                    mindiagline = 2,
+                    minvertline = 2, 
+                    tw = cross_theiler_window, 
+                    whiteline = FALSE,
+                    recpt=FALSE)
+```
 
 ## Delay
 Delay is a parameter set within CRQA which refer to the time lag between data points used to reconstruct the phase space of a time series. It determines how far apart in time the data points are when assessing their similarity or synchronization.
@@ -150,6 +172,27 @@ fraction_values <- fraction_values[!is.na(fraction_values)]
 # Find the first local minimum (drop in false neighbors)
 embedding_dimension <- which(diff(sign(diff(fraction_values))) > 0) + 1
 embedding_dimension <- embedding_dimension[1]
+```
+
+## Rescale Type
+- Rescale type is set a method of normalizing the time series before computing distances
+- Initlaly set rescale type to 'mean'
+
+```r
+cross_rescale_type = 'mean'
+```
+
+### Implementation
+- Utilize this code to rescale the time series data for each participant based on the chosen 'cross_rescale_type', so the CRQA comparison is done on a comparable scale.
+  
+```r
+if (cross_rescale_type == 'mean'){
+  rescaled_p1 = ts_participant1s / mean(ts_participant1s)
+  rescaled_p2 = ts_participant2s / mean(ts_participant2s)
+} else if (cross_rescale_type == 'max'){
+  rescaled_p1 = ts_participant1s / max(ts_participant1s)
+  rescaled_p2 = ts_participant2s / max(ts_participant2s)
+}
 ```
 
 ## Useful function for large datasets
