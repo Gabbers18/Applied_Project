@@ -204,6 +204,8 @@ Warning: sparse->dense coercion: allocating vector of size 1.2 GiBError: vector 
 
 This warning will usually appear if you are working with large timeseries datasets with **more than 12000 rows** within the CRQA function.
 
+### Example in R: 
+
 ```r
 get_middle_60_percent <- function(time_series) {
   total_length <- length(time_series)
@@ -223,6 +225,20 @@ get_middle_60_percent <- function(time_series) {
 - normalized entropy
 - laminarity
 - trapping time
+
+## Example in R:
+
+```r
+crqa_analysis$RR # rate of recurrence
+crqa_analysis$DET # % determinism
+crqa_analysis$NRLINE # total number of lines on the plot
+crqa_analysis$maxL # maximum line length on plot
+crqa_analysis$L # average line length on plot
+crqa_analysis$ENTR # entropy
+crqa_analysis$rENTR # normalized entropy
+crqa_analysis$LAM # laminarity
+crqa_analysis$TT # trapping time
+```
 
 ## Example Visualization
 For this example, I chose to include two methods of visualizing the analysis. The first method utilizes the function 'plotRP()' which is from the 'crqa' library. The second method I used 'ggplot.'
