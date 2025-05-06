@@ -1,4 +1,4 @@
-# File Descriptions
+# Overview
 
 ## [MEA_video16.txt](https://github.com/Gabbers18/Applied_Project/blob/main/Examples/Example_Datasets/MEA_video16.txt)
 
