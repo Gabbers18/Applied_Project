@@ -94,7 +94,7 @@ cross_remaining_fnn_p1 = cross_fnn_p1[cross_chosen_embedding]
 cross_remaining_fnn_p2 = cross_fnn_p2[cross_chosen_embedding]
 ```
 
-```{r select-radius}
+```{r rescale-type}
 if (cross_rescale_type == 'mean'){
   rescaled_p1 = ts_participant1s / mean(ts_participant1s)
   rescaled_p2 = ts_participant2s / mean(ts_participant2s)
