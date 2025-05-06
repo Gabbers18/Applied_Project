@@ -14,7 +14,7 @@ library(tidyr)
 
 # Open results
 ```{r results}
-results <- read.csv("/Users/gabrielleyoung/Desktop/Capstone_Project/Final_CRQA_Results\ copy.csv")
+results <- read.csv("your_path_to_CRQA_Results")
 ```
 
 # Normalize Results
@@ -101,6 +101,6 @@ descriptives_results <- results_scaled %>%
 
 # Export as CSV
 ```{r csv}
-write.csv(descriptives_results, file = "/Users/gabrielleyoung/Desktop/CRQA_Descriptives_Results.csv", row.names = FALSE)
+write.csv(descriptives_results, file = "your_path_to_save_to", row.names = FALSE)
 ```
 
