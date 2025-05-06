@@ -24,9 +24,6 @@ The data extracted from this analysis is outputed as txt files. For the purposes
 
 _More information on the MEA software can be found at [this link.](https://psync.ch/mea/)_
 
-**The dataset:**
-
-[TxtFiles 2.zip](https://github.com/user-attachments/files/17984477/TxtFiles.2.zip)
 
 ### Visualizing the frame-by-frame differences in interactions - Example Dyad 40
 ![gif](https://github.com/user-attachments/assets/882d8317-5555-4003-a48d-c325caadc337)
