@@ -175,7 +175,7 @@ embedding_dimension <- embedding_dimension[1]
 ```
 
 ## Rescale Type
-- Rescale type is set a method of normalizing the time series before computing distances
+- Rescale type is set a method of **normalizing** the time series before computing distances
 - Initlaly set rescale type to 'mean'
 
 ```r
@@ -223,6 +223,33 @@ get_middle_60_percent <- function(time_series) {
 - normalized entropy
 - laminarity
 - trapping time
+
+## Example Visualization
+For this example, I chose to include two methods of visualizing the analysis. The first method utilizes the function 'plotRP()' which is from the 'crqa' library. The second method I used 'ggplot.'
+
+### Plotting Method 1
+```r
+# CRQA Plot for Single Dyad - Dyad 16
+par = list(unit = 2, 
+           labelx = "x-axis movement", 
+           labely = "y-axis movement", 
+           cols = "red", 
+           pcex = 1)
+plotRP(crqa_analysis$RP, par)
+```
+
+### Plotting Method 2
+```r
+crqa_df = data.frame(points = crqa_analysis$RP@i,
+                           loc = seq_along(crqa_analysis$RP@i))
+ggplot(crqa_df,aes(x=points,
+                        y=loc)) +
+  geom_point(color="black",size=.01) +
+  theme_classic() +
+  theme(legend.position="none", axis.text.x = element_blank(), axis.text.y = element_blank()) +
+  ylab("Participant 2") + xlab("Participant 1") +
+  ggtitle("Dyad 16\nCross-recurrence Plot between\nParticipant 1 and Participant 2 Movement in Survivor Task")
+```
 
 ## What are these metrics?
 1) <ins>RR: Recurrence Rate<ins>
@@ -333,33 +360,4 @@ The average length of vertical lines, representing how long interactions remain 
 **Result: 5.14**
 
 A trapping time of 5.14 suggests that, on average, the participants remained in similar states for short durations, indicating brief periods of stability in their interaction.
-
-
-## Example Visualization
-For this example, I chose to include two methods of visualizing the analysis. The first method utilizes the function 'plotRP()' which is from the 'crqa' library. The second method I used 'ggplot.'
-
-### Plotting Method 1
-```r
-# CRQA Plot for Single Dyad - Dyad 16
-par = list(unit = 2, 
-           labelx = "x-axis movement", 
-           labely = "y-axis movement", 
-           cols = "red", 
-           pcex = 1)
-plotRP(crqa_analysis$RP, par)
-```
-
-### Plotting Method 2
-```r
-crqa_df = data.frame(points = crqa_analysis$RP@i,
-                           loc = seq_along(crqa_analysis$RP@i))
-ggplot(crqa_df,aes(x=points,
-                        y=loc)) +
-  geom_point(color="black",size=.01) +
-  theme_classic() +
-  theme(legend.position="none", axis.text.x = element_blank(), axis.text.y = element_blank()) +
-  ylab("Participant 2") + xlab("Participant 1") +
-  ggtitle("Dyad 16\nCross-recurrence Plot between\nParticipant 1 and Participant 2 Movement in Survivor Task")
-```
-
 
