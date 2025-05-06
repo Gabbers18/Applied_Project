@@ -121,15 +121,15 @@ crqa_analysis = crqa(ts1 = rescaled_p1,
 
 #RESULTS FOR CRQA SAMPLE
 ```{r print-sample-results}
-crqa_analysis$RR # rate of recurrence
-crqa_analysis$DET # % determinism
-crqa_analysis$NRLINE # total number of lines on the plot
-crqa_analysis$maxL # maximum line length on plot
-crqa_analysis$L # average line length on plot
-crqa_analysis$ENTR # entropy
-crqa_analysis$rENTR # normalized entropy
-crqa_analysis$LAM # laminarity
-crqa_analysis$TT # trapping time
+crqa_analysis$RR
+crqa_analysis$DET 
+crqa_analysis$NRLINE
+crqa_analysis$maxL
+crqa_analysis$L
+crqa_analysis$ENTR
+crqa_analysis$rENTR
+crqa_analysis$LAM
+crqa_analysis$TT
 ```
 
 ```{r plot-sample-dyad}
