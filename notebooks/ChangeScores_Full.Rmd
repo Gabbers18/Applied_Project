@@ -1,0 +1,135 @@
+---
+title: "Change_Scores_Calculation"
+output: pdf_document
+date: "2025-05-06"
+---
+```{r libraries}
+library(dplyr)
+library(utils)
+library(ggplot2)
+library(tidyr)
+```
+
+```{r persuasion-score}
+# open the data and reorganize columns
+df <- read.csv("/Users/gabrielleyoung/Desktop/DataAP/cleaned_qualtrics.csv")
+
+#df100 <- df %>% 
+
+df2 <- df %>%
+  dplyr::rename(
+    dyad_number = `STUDY.INVESTIGATOR.TO.COMPLETE.THE.FOLLOWING.BELOW....Dyad.Number`,
+    participant_number = `STUDY.INVESTIGATOR.TO.COMPLETE.THE.FOLLOWING.BELOW....Participant.Number..1.or.2.`
+  ) %>%
+  slice(-1)
+
+# Reorder columns: dyad_number and participant_number first, followed by individual and group columns
+df2 <- df2 %>%
+  select(
+    dyad_number,
+    participant_number,
+    starts_with("individual_"),
+    starts_with("group_"),
+    everything()
+  )
+
+# rename repeated dyads to give them unique identification
+df2 <- df2 %>% filter(!dyad_number %in% c("sun", "sunny", "dafasd", ".")) %>%
+  mutate(dyad_number = as.numeric(dyad_number)) %>%
+  mutate(dyad_number = if_else(row_number() %in% c(128, 129), 120, dyad_number)) %>%
+  mutate(dyad_number = if_else(row_number() %in% c(156, 157), 108, dyad_number))
+```
+
+```{r match-dyad-data}
+#name group ranking columns for dyad
+group_columns <- grep("^group_", names(df2), value = TRUE)
+individual_columns <- grep("^individual_", names(df2), value = TRUE)
+
+#match group rankings across participants 1 and 2
+df_filled <- df2 %>%
+  group_by(dyad_number) %>%
+  mutate(across(all_of(group_columns), 
+                 ~ ifelse(is.na(.), first(na.omit(.)), .))) %>%
+  ungroup() 
+
+# remove rows with NAs
+df_cleaned <- df_filled %>%
+  filter(!if_any(all_of(c(individual_columns, group_columns)), is.na))
+
+write.csv(df_cleaned, file = "/Users/gabrielleyoung/Desktop/cleaned_with_participant_numbers.csv", row.names = FALSE)
+```
+
+```{r}
+# clean data further; changing participant numbers that were entered incorrectly
+df_cleaned <- df_cleaned %>%
+  mutate(participant_number = if_else(dyad_number == 103 & participant_number == "3", "2", participant_number))
+
+# we want to change the NA to make it a 1
+df_cleaned <- df_cleaned %>%
+  mutate(participant_number = if_else(dyad_number == 18 & (is.na(participant_number) | participant_number != "2"), "1", participant_number))
+```
+
+
+```{r}
+df_cleaned$individual_salt_tablets <- df_cleaned$`individual_salt_tablets`
+```
+
+```{r change-score}
+df_change_scores <- df_cleaned %>%
+  rowwise() %>%  # Handle each row individually
+  mutate(
+    spearman_corr = cor(
+      c(individual_jack_knife, individual_flashlight, individual_area_map, `individual_plastic._raincoat`, 
+        individual_compass, individual_compress_kit, individual_small_pistol, individual_parachute, 
+        `individual_salt_tablets.`, individual_water_bottles, individual_plants_book, 
+        individual_sunglasses, individual_vodka, individual_top_coat, individual_mirror),
+      c(group_jack_knife, group_flashlight, group_area_map, group_raincoat, 
+        group_compass, group_compress_kit, group_pistol, group_parachute, 
+        group_salt_tablets, group_water_bottles, group_plants_book, 
+        group_sunglasses, group_vodka, group_top_coat, group_mirror),
+      method = "spearman", use = "complete.obs"
+    )
+  )
+```
+
+```{r}
+# here i am creating a dataset with spearman correlation coefficients for all dyads
+spearman_data_large <- df_change_scores %>%
+  filter(!dyad_number ==11) %>%
+  select(dyad_number, participant_number, spearman_corr) %>%
+  pivot_longer(cols = spearman_corr, 
+               names_to = "score_type", 
+               values_to = "individual_level_change_score")
+
+spearman_data_large <- spearman_data_large %>%
+  select(!score_type)
+
+df_change_scores <- spearman_data_large %>% 
+  group_by(dyad_number) %>%
+  mutate(
+    dyad_level_change_score = abs(individual_level_change_score[participant_number == 1] - individual_level_change_score[participant_number == 2])
+  ) %>%
+  ungroup()
+```
+
+```{r}
+# Check the result
+print(df_change_scores)
+```
+
+
+```{r write-csv}
+write.csv(df_change_scores, file = "/Users/gabrielleyoung/Desktop/ALLDataChangeScores.csv", row.names = FALSE)
+```
+
+```{r}
+df_change_scores2 <- df_change_scores %>% filter(participant_number ==1)
+
+ggplot(df_change_scores2, aes(x = dyad_number, y = dyad_level_change_score)) +
+  geom_bar(stat = "identity") +
+  labs(title = "Dyad Level Change Score by Dyad Number",
+       x = "Dyad Number",
+       y = "Dyad Level Change Score") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))
+```
