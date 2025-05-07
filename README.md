@@ -55,8 +55,8 @@ Applied_Project/
 - tidyr
 - scales
 
-## Part 1
-### Motion Energy Analysis (MEA)
+# Part 1
+## Motion Energy Analysis (MEA)
 Motion Energy Analysis was developed by Ramseyer in 2019. MEA is a non-invasive method of developed by  extracting frame-by-frame differences in movement from video data. This method is especially useful when trying to analyze nonverbal behavior. 
 
 The data extracted from this analysis is outputed as txt files. For the purposes of this study, we have chosen to capture entire body movements. Looking within the files, we can see each participant's movement is represented by a singluar column in the txt file. Each txt file represents a dyad.
@@ -111,8 +111,8 @@ mea_normal/
 # ... and so on for each file
 ```
 
-## Section 2
-### Cross Recurrence Quantification Analysis (CRQA)
+# Part 2
+## Cross Recurrence Quantification Analysis (CRQA)
 This method is used to capture the dynamics between two people. It is used to quantify patterns in language and movement. It captures non-linear patterns and synchorny over time. 
 
 We will be using this technique in conjuction with the continuous data derived from the MEA. This is time series data between two participants which will be reconstructed into a single, two-dimensional plot.
@@ -123,9 +123,26 @@ We will be using Monerno and Coco CRQA R package to conduct this analysis.
 
 _More information on this package can be found at [this link.](https://github.com/morenococo/crqa)_
 
-## Example CRQA Plot for Dyad 102
+### Step 1: Setting Paramaters
 
-<img width="606" alt="Screenshot 2025-03-01 at 9 05 37 PM" src="https://github.com/user-attachments/assets/250322d5-5d7c-40a8-91bf-08cba61b97d7" />
+### Our parameters
+- theiler window
+- delay
+- embedding dimenson
+- radius
+- rescale type
+
+## Theiler Window
+- Theiler window excludes near-diagonal points from being counted as recurrences
+- Set to 0
+- 0 means no exclusion of points
+- we will use this later when determining embedding dimension
+
+### Example in R:
+
+```r
+cross_theiler_window = 0
+```
 
 ## Final_CRQA_Results.csv  
 this is what you use for the descriptive results analyses
