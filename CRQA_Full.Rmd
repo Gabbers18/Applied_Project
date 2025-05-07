@@ -27,6 +27,14 @@ sampRate = 25, s1Col = 2, s2Col = 1,
                      idOrder = c("id","session"), idSep="_")
 ```
 
+```{r example-timeseries-visualizations}
+diagnosticPlot(mea_normal[[1]])
+diagnosticPlot(mea_normal[[2]])
+diagnosticPlot(mea_normal[[3]])
+diagnosticPlot(mea_normal[[4]])
+diagnosticPlot(mea_normal[[5]])
+```
+
 # Part 2: Cross Recurrence Quantification Analysis (CRQA) 
 
 # DETERMINE PARAMETERS
