@@ -15,7 +15,7 @@ may be important to know for training purposes or within other contexts (Angus e
 
 ## Repository Structure
 
-```r
+```
 Applied_Project/
 ├── data/                          # Raw and processed data files
 │   ├── raw/                       # Original, unprocessed data
@@ -71,7 +71,7 @@ _More information on the rMEA package can be found at [this link.](https://githu
 ### Example R code
 For .txt files - direct output of MEA
 
-```r
+```
 mea_normal <- readMEA("your_folder_path_to_MEA_files", 
 sampRate = 25, s1Col = 2, s2Col = 1,
                      s1Name = "Participant2", s2Name = "Participant1", skip=1,
