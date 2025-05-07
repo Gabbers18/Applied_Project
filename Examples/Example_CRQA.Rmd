@@ -44,7 +44,7 @@ ts_participant2s <- get_middle_60_percent(ts_participant2)
 ```{r determine-parameters}
 cross_theiler_window = 0
 cross_rescale_type = 'mean'
-# rec_rescale_type = 'max'
+radius = .1
 ```
 
 ```{r determine-delay}
@@ -109,7 +109,7 @@ crqa_analysis = crqa(ts1 = rescaled_p1,
                     ts2 = rescaled_p2,
                     delay = cross_chosen_delay, 
                     embed = cross_chosen_embedding, 
-                    r = .1,
+                    r = radius,
                     normalize = 0, 
                     rescale = 0, # distance matrix rescaling option -- see documentation
                     mindiagline = 2,
@@ -130,6 +130,10 @@ crqa_analysis$ENTR
 crqa_analysis$rENTR
 crqa_analysis$LAM
 crqa_analysis$TT
+```
+
+```{r print-from-package}
+print(crqa_analysis)
 ```
 
 ```{r plot-sample-dyad}
