@@ -1,0 +1,99 @@
+---
+title: "Change_Scores_Calculation"
+output: pdf_document
+date: "2025-05-06"
+---
+
+```{r}
+df_cleaned <- read.csv("/Users/gabrielleyoung/Desktop/cleaned_qualtrics.csv")
+```
+
+```{r}
+df_change_scores <- df_cleaned %>%
+  rowwise() %>%
+  mutate(
+    spearman_corr = {
+      x <- c(individual_jack_knife, individual_flashlight, individual_area_map, individual_plastic._raincoat, 
+             individual_compass, individual_compress_kit, individual_small_pistol, individual_parachute, 
+             individual_salt_tablets, individual_water_bottles, individual_plants_book, 
+             individual_sunglasses, individual_vodka, individual_top_coat, individual_mirror)
+      
+      y <- c(group_jack_knife, group_flashlight, group_area_map, group_raincoat, 
+             group_compass, group_compress_kit, group_pistol, group_parachute, 
+             group_salt_tablets, group_water_bottles, group_plants_book, 
+             group_sunglasses, group_vodka, group_top_coat, group_mirror)
+      
+      # Identify complete cases
+      complete_idx <- complete.cases(x, y)
+      
+      # Check if there are enough complete pairs to compute correlation
+      if (sum(complete_idx) >= 2) {
+        cor(x[complete_idx], y[complete_idx], method = "spearman")
+      } else {
+        NA_real_
+      }
+    }
+  ) %>%
+  ungroup()
+
+```
+
+```{r change-score}
+df_change_scores <- df_cleaned %>%
+  rowwise() %>%  # Handle each row individually
+  mutate(
+    spearman_corr = cor(
+      c(individual_jack_knife, individual_flashlight, individual_area_map, `individual_plastic._raincoat`, 
+        individual_compass, individual_compress_kit, individual_small_pistol, individual_parachute, 
+        `individual_salt_tablets.`, individual_water_bottles, individual_plants_book, 
+        individual_sunglasses, individual_vodka, individual_top_coat, individual_mirror),
+      c(group_jack_knife, group_flashlight, group_area_map, group_raincoat, 
+        group_compass, group_compress_kit, group_pistol, group_parachute, 
+        group_salt_tablets, group_water_bottles, group_plants_book, 
+        group_sunglasses, group_vodka, group_top_coat, group_mirror),
+      method = "spearman", use = "complete.obs"
+    )
+  )
+```
+
+```{r}
+# here i am creating a dataset with spearman correlation coefficients for all dyads
+spearman_data_large <- df_change_scores %>%
+  filter(!dyad_number ==11) %>%
+  select(dyad_number, participant_number, spearman_corr) %>%
+  pivot_longer(cols = spearman_corr, 
+               names_to = "score_type", 
+               values_to = "individual_level_change_score")
+
+spearman_data_large <- spearman_data_large %>%
+  select(!score_type)
+
+df_change_scores <- spearman_data_large %>% 
+  group_by(dyad_number) %>%
+  mutate(
+    dyad_level_change_score = abs(individual_level_change_score[participant_number == 1] - individual_level_change_score[participant_number == 2])
+  ) %>%
+  ungroup()
+```
+
+```{r}
+# Check the result
+print(df_change_scores)
+```
+
+
+```{r write-csv}
+write.csv(df_change_scores, file = "/Users/gabrielleyoung/Desktop/ALLDataChangeScores.csv", row.names = FALSE)
+```
+
+```{r}
+df_change_scores2 <- df_change_scores %>% filter(participant_number ==1)
+
+ggplot(df_change_scores2, aes(x = dyad_number, y = dyad_level_change_score)) +
+  geom_bar(stat = "identity") +
+  labs(title = "Dyad Level Change Score by Dyad Number",
+       x = "Dyad Number",
+       y = "Dyad Level Change Score") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))
+```
