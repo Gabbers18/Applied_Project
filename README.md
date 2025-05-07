@@ -78,7 +78,7 @@ sampRate = 25, s1Col = 2, s2Col = 1,
                      idOrder = c("id","session"), idSep="_")
 ```
 
-#### Code explaination
+### Code explaination
 This section utilizes **only** the 'rMEA' library. 
 
 Item descriptions:
@@ -93,7 +93,7 @@ Item descriptions:
 - This package is useful for naming columns and parsing columns appropriately
 - Useful for visualing the time series data; see [Example_MEA.Rmd diagnostic plots](https://github.com/Gabbers18/Applied_Project/blob/main/Examples/Example_MEA.Rmd)
 
-#### Structure of mea_normal Output list
+### Structure of mea_normal Output list
 ```
 mea_normal/
 ├── all_MEA_1000/                          # each individual file (ex: dyad 1000 here)
