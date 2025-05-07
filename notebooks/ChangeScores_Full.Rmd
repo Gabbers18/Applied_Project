@@ -4,38 +4,8 @@ output: pdf_document
 date: "2025-05-06"
 ---
 
-```{r}
+```{r open-csv}
 df_cleaned <- read.csv("/Users/gabrielleyoung/Desktop/cleaned_qualtrics.csv")
-```
-
-```{r}
-df_change_scores <- df_cleaned %>%
-  rowwise() %>%
-  mutate(
-    spearman_corr = {
-      x <- c(individual_jack_knife, individual_flashlight, individual_area_map, individual_plastic._raincoat, 
-             individual_compass, individual_compress_kit, individual_small_pistol, individual_parachute, 
-             individual_salt_tablets, individual_water_bottles, individual_plants_book, 
-             individual_sunglasses, individual_vodka, individual_top_coat, individual_mirror)
-      
-      y <- c(group_jack_knife, group_flashlight, group_area_map, group_raincoat, 
-             group_compass, group_compress_kit, group_pistol, group_parachute, 
-             group_salt_tablets, group_water_bottles, group_plants_book, 
-             group_sunglasses, group_vodka, group_top_coat, group_mirror)
-      
-      # Identify complete cases
-      complete_idx <- complete.cases(x, y)
-      
-      # Check if there are enough complete pairs to compute correlation
-      if (sum(complete_idx) >= 2) {
-        cor(x[complete_idx], y[complete_idx], method = "spearman")
-      } else {
-        NA_real_
-      }
-    }
-  ) %>%
-  ungroup()
-
 ```
 
 ```{r change-score}
@@ -56,8 +26,7 @@ df_change_scores <- df_cleaned %>%
   )
 ```
 
-```{r}
-# here i am creating a dataset with spearman correlation coefficients for all dyads
+```{r clean_spearman_data}
 spearman_data_large <- df_change_scores %>%
   filter(!dyad_number ==11) %>%
   select(dyad_number, participant_number, spearman_corr) %>%
@@ -76,17 +45,15 @@ df_change_scores <- spearman_data_large %>%
   ungroup()
 ```
 
-```{r}
-# Check the result
+```{r check_result}
 print(df_change_scores)
 ```
 
-
 ```{r write-csv}
-write.csv(df_change_scores, file = "/Users/gabrielleyoung/Desktop/ALLDataChangeScores.csv", row.names = FALSE)
+write.csv(df_change_scores, file = "your_desired_path_location.csv", row.names = FALSE)
 ```
 
-```{r}
+```{r plot_dyad_scores}
 df_change_scores2 <- df_change_scores %>% filter(participant_number ==1)
 
 ggplot(df_change_scores2, aes(x = dyad_number, y = dyad_level_change_score)) +
