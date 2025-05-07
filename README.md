@@ -71,12 +71,13 @@ _More information on the rMEA package can be found at [this link.](https://githu
 ### Example R code
 For .txt files - direct output of MEA
 
-```
+```r
 mea_normal <- readMEA("your_folder_path_to_MEA_files", 
 sampRate = 25, s1Col = 2, s2Col = 1,
                      s1Name = "Participant2", s2Name = "Participant1", skip=1,
                      idOrder = c("id","session"), idSep="_")
 ```
+
 ### Important notes
 - The path for this code **must** be a folder, not individual files
 - This code utilizes a folder containing **only** .txt files; see [Example_MEA.Rmd](https://github.com/Gabbers18/Applied_Project/blob/main/Examples/Example_MEA.Rmd) for how to run other file types
@@ -89,7 +90,7 @@ This code snipet utilizes the 'rMEA' library. Item descriptions:
 - s2Name = corresponding name of column 2
 
 #### Structure of mea_normal Output "list"
-```r
+```
 meal_normal/
 ├── all_MEA_1000/                          # each individual file (ex: dyad 1000 here)
 │   ├── MEA/                               # 2 column MEA output 
@@ -105,19 +106,6 @@ meal_normal/
 │        └── Participant1
 # ... and so on for each file
 ```
-
-## Libraries
-- plyr
-- crqa
-- dplyr
-- rMEA
-- zoo
-- tseriesChaos 
-- ggplot2
-- purrr
-- readr
-- tidyr
-- scales
 
 ## Section 2
 ### Cross Recurrence Quantification Analysis (CRQA)
