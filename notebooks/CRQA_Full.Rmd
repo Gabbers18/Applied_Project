@@ -34,6 +34,7 @@ sampRate = 25, s1Col = 2, s2Col = 1,
 ```{r determine-parameters}
 cross_theiler_window = 0
 cross_rescale_type = 'mean'
+radius = .1
 ```
 
 ```{r random-sample}
@@ -181,7 +182,7 @@ run_crqa_for_dyads <- function(df_list, cross_rescale_type, average_delay, avera
                             ts2 = rescaled_p2,
                             delay = average_delay,
                             embed = average_embedding,
-                            r = 0.1,
+                            r = radius,
                             normalize = 0,
                             rescale = 0,
                             mindiagline = 2,
