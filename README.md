@@ -134,7 +134,10 @@ _More information on this package can be found at [this link.](https://github.co
 
 ## Step 1: Determine Inital Parameter(s)
 
-For this data, I chose to set the theiler window, rescale type, and radius initially. 
+I chose to intially set the following variables:
+1) theiler window
+2) rescale type
+3) radius
 
 **1) Theiler Window**
 - Theiler window excludes near-diagonal points from being counted as recurrences
@@ -159,11 +162,12 @@ cross_rescale_type = 'mean'
 
 In this case I chose a radius of **0.1**. This small value **increases** the sensitivity to recurrent points in this data. This stricter criteria means our analysis will be more sensitive to smaller differences in the data.
 
-### Example in R:
+**Example in R**
 
 ```r
 radius = .1
 ```
+
 
 ## Delay
 Delay is a parameter set within CRQA which refer to the time lag between data points used to reconstruct the phase space of a time series. It determines how far apart in time the data points are when assessing their similarity or synchronization.
@@ -189,7 +193,21 @@ find_first_minimum <- function(ami_values) {
 }
 ```
 
-## Embedding Dimension
+## Step 2: Calculate Parameters
+
+We will be calculating
+1) Delay
+2) Embedding Dimension
+
+
+First, we will set a seed for reproducibility.
+** Example in R:**
+```r
+# Randomly sample 5 dyads
+set.seed(123)
+dyads_to_sample <- sample(1:length(mea_normal), 5)
+```
+** 2)Embedding Dimension**
 
 
 ## Final_CRQA_Results.csv  
