@@ -38,7 +38,6 @@ radius = .1
 ```
 
 ```{r random-sample}
-# Randomly sample 5 dyads
 set.seed(123)
 dyads_to_sample <- sample(1:length(mea_normal), 5)
 ```
