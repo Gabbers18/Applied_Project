@@ -67,7 +67,7 @@ This is because you can run CRQA with any time series data.
 
 - [CSV data](https://github.com/Gabbers18/Applied_Project/blob/main/Examples/Example_Datasets/dyad_16_MEA.csv)
 
-## Setting Parameters for the Analysis
+## Setting Parameters
 
 ### Our parameters
 - theiler window
