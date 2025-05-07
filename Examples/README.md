@@ -104,18 +104,7 @@ In this case I chose a radius of **0.1**. This small value **increases** the sen
 ### Example in R:
 
 ```r
-crqa_analysis = crqa(ts1 = rescaled_p1, 
-                    ts2 = rescaled_p2,
-                    delay = cross_chosen_delay, 
-                    embed = cross_chosen_embedding, 
-                    r = .1, # we are looking at this value!
-                    normalize = 0, 
-                    rescale = 0,
-                    mindiagline = 2,
-                    minvertline = 2, 
-                    tw = cross_theiler_window, 
-                    whiteline = FALSE,
-                    recpt=FALSE)
+radius = .1
 ```
 
 ## Delay
