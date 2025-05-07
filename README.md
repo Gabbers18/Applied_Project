@@ -123,7 +123,7 @@ We will be using Monerno and Coco CRQA R package to conduct this analysis.
 
 _More information on this package can be found at [this link.](https://github.com/morenococo/crqa)_
 
-### Step 1: Setting Paramaters
+## Setting Paramaters
 
 ### Our parameters
 - theiler window
@@ -132,17 +132,65 @@ _More information on this package can be found at [this link.](https://github.co
 - radius
 - rescale type
 
-## Theiler Window
+## Step 1: Determine Inital Parameter(s)
+
+For this data, I chose to set the theiler window, rescale type, and radius initially. 
+
+**1) Theiler Window**
 - Theiler window excludes near-diagonal points from being counted as recurrences
 - Set to 0
 - 0 means no exclusion of points
 - we will use this later when determining embedding dimension
 
-### Example in R:
-
+**Example in R**
 ```r
 cross_theiler_window = 0
 ```
+**2) Rescale type**
+
+- Rescale type is set a method of **normalizing** the time series before computing distances
+- Initlaly set rescale type to 'mean'
+
+**Example in R**
+```r
+cross_rescale_type = 'mean'
+```
+**3) Radius**
+
+In this case I chose a radius of **0.1**. This small value **increases** the sensitivity to recurrent points in this data. This stricter criteria means our analysis will be more sensitive to smaller differences in the data.
+
+### Example in R:
+
+```r
+radius = .1
+```
+
+## Delay
+Delay is a parameter set within CRQA which refer to the time lag between data points used to reconstruct the phase space of a time series. It determines how far apart in time the data points are when assessing their similarity or synchronization.
+
+Delay is a parameter used in CRQA that refers to the **time lag between data points** used to reconstruct the phase space of a time series. It determines how far apart in time the data points are when assessing similarity or synchronization.
+
+### How Delay is Determined:
+
+* Calculated using **Average Mutual Information (AMI)**.
+* AMI measures the amount of shared information between the original time series and its delayed version.
+* The **first local minimum** in the AMI curve indicates the optimal delay—this is the point where each successive data point provides the most new information.
+
+### Example in R:
+
+```{r find-first-minimum}
+find_first_minimum <- function(ami_values) {
+  for (i in 2:(length(ami_values) - 1)) {
+    if (ami_values[i] < ami_values[i - 1] && ami_values[i] < ami_values[i + 1]) {
+      return(i)
+    }
+  }
+  return(NULL)
+}
+```
+
+## Embedding Dimension
+
 
 ## Final_CRQA_Results.csv  
 this is what you use for the descriptive results analyses
