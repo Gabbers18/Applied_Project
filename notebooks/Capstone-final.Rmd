@@ -1,0 +1,589 @@
+---
+title: "CRQA-Sample-Dataset"
+output: pdf_document
+date: "2024-09-23"
+---
+
+```{r setup, include=FALSE}
+library(plyr)
+library(crqa)
+library(dplyr)
+library(rMEA)
+library(zoo)
+library(tseriesChaos)
+library(ggplot2)
+library(purrr)
+library(readr)
+library(tidyr)
+library(scales)
+```
+
+## Part 1: Motion Energy Analysis
+
+# MEA is a non-invasive method of developed by extracting frame-by-frame differences in movement from video data. 
+# This method is especially useful when trying to analyze nonverbal behavior from video data
+```{r MEA}
+mea_normal <- readMEA("your_file_path", 
+sampRate = 25, s1Col = 2, s2Col = 1,
+                     s1Name = "Participant2", s2Name = "Participant1", skip=1,
+                     idOrder = c("id","session"), idSep="_")
+```
+
+# Participant time series data from 5 sample dyads.
+```{r example-dyads}
+diagnosticPlot(mea_normal[[1]])
+diagnosticPlot(mea_normal[[2]])
+diagnosticPlot(mea_normal[[3]])
+diagnosticPlot(mea_normal[[4]])
+diagnosticPlot(mea_normal[[5]])
+```
+
+# Part 2: Cross Recurrence Quantification Analysis (CRQA) 
+
+# This method is used to capture the dynamics between two people. It is used to quantify patterns in 
+# language and movement. It captures non-linear patterns and synchorny over time. Time series data 
+# extracted from the MEA will be used as 
+```{r sample-dataset}
+dyad101_data <- mea_normal[[1]]
+
+# Assuming the dataframe has columns for two participants
+dyad101_data2 <- dyad101_data[[1]]
+ts_participant1 <- dyad101_data2$Participant1  # Time series for Participant 1
+ts_participant2 <- dyad101_data2$Participant2 
+
+ts_participant1s <- ts_participant1[4610:13829]
+ts_participant2s <- ts_participant2[4610:13829]
+```
+
+# DETERMINE PARAMETERS - For a Single Dyad 
+```{r determine-parameters}
+cross_theiler_window = 0
+cross_rescale_type = 'mean'
+# rec_rescale_type = 'max'
+```
+
+```{r determine-delay}
+cross_ami_p1 = mutual(ts_participant1s,
+                 lag.max = 800)
+
+cross_ami_p2 = mutual(ts_participant2s,
+                     lag.max = 800)
+
+
+find_first_minimum <- function(ami_values) {
+  for (i in 2:(length(ami_values) - 1)) {
+    if (ami_values[i] < ami_values[i - 1] && ami_values[i] < ami_values[i + 1]) {
+      return(i)  # Return the lag corresponding to the first local minimum
+    }
+  }
+  return(NULL)  # Return NULL if no minimum is found
+}
+
+# Apply the function to both participants
+chosen_delay_p1 = find_first_minimum(cross_ami_p1)
+chosen_delay_p2 = find_first_minimum(cross_ami_p2)
+
+cross_chosen_delay = round(mean(c(chosen_delay_p1, chosen_delay_p2)))
+
+cross_remaining_mutual_info_p1 = cross_ami_p1[cross_chosen_delay]
+cross_remaining_mutual_info_p2 = cross_ami_p2[cross_chosen_delay]
+```
+
+```{r determine-embedding-d}
+cross_max_embedding = 10
+cross_fnn_p1 = false.nearest(ts_participant1s,
+                            m = cross_max_embedding,
+                            d = cross_chosen_delay,
+                            t = cross_theiler_window)
+
+# determine embedding
+cross_fnn_p2 = false.nearest(ts_participant2s,
+                            m = cross_max_embedding,
+                            d = cross_chosen_delay,
+                            t = cross_theiler_window)
+plot(cross_fnn_p1)
+plot(cross_fnn_p2)
+
+cross_chosen_embedding = 5
+cross_remaining_fnn_p1 = cross_fnn_p1[cross_chosen_embedding]
+cross_remaining_fnn_p2 = cross_fnn_p2[cross_chosen_embedding]
+```
+
+```{r select-radius}
+if (cross_rescale_type == 'mean'){
+  rescaled_p1 = ts_participant1s / mean(ts_participant1s)
+  rescaled_p2 = ts_participant2s / mean(ts_participant2s)
+} else if (cross_rescale_type == 'max'){
+  rescaled_p1 = ts_participant1s / max(ts_participant1s)
+  rescaled_p2 = ts_participant2s / max(ts_participant2s)
+}
+```
+
+```{r run-crqa-single-dyad}
+crqa_analysis = crqa(ts1 = rescaled_p1, 
+                    ts2 = rescaled_p2,
+                    delay = cross_chosen_delay, 
+                    embed = cross_chosen_embedding, 
+                    r = .1, # you can keep playing with this to find something that works
+                    normalize = 0, 
+                    rescale = 0, # distance matrix rescaling option -- see documentation
+                    mindiagline = 2,
+                    minvertline = 2, 
+                    tw = cross_theiler_window, 
+                    whiteline = FALSE,
+                    recpt=FALSE)
+```
+
+#RESULTS FOR CRQA SAMPLE
+```{r print-sample-results}
+crqa_analysis$RR # rate of recurrence
+crqa_analysis$DET # % determinism
+crqa_analysis$NRLINE # total number of lines on the plot
+crqa_analysis$maxL # maximum line length on plot
+crqa_analysis$L # average line length on plot
+crqa_analysis$ENTR # entropy
+crqa_analysis$rENTR # normalized entropy
+crqa_analysis$LAM # laminarity
+crqa_analysis$TT # trapping time
+```
+
+```{r plot-sample-dyad}
+# CRQA Plot for Single Dyad - Dyad 102
+par = list(unit = 2, 
+           labelx = "x-axis movement", 
+           labely = "y-axis movement", 
+           cols = "red", 
+           pcex = 1)
+plotRP(crqa_analysis$RP, par)
+```
+
+```{r plot}
+crqa_df = data.frame(points = crqa_analysis$RP@i,
+                           loc = seq_along(crqa_analysis$RP@i))
+ggplot(crqa_df,aes(x=points,
+                        y=loc)) +
+  geom_point(color="black",size=.01) +
+  theme_classic() +
+  theme(legend.position="none", axis.text.x = element_blank(), axis.text.y = element_blank()) +
+  ylab("Participant 2") + xlab("Participant 1") +
+  ggtitle("Cross-recurrence plot between\nParticipant 1 and Participant 2 Movement in Survivor Task")
+```
+
+# DETERMINE PARAMETERES USING A SAMPLE
+```{r sample-to-select-parameters}
+find_elbow <- function(fnn_values) {
+  # Remove NA or Inf values from FNN values
+  fnn_values <- fnn_values[is.finite(fnn_values)]
+  
+  # Calculate the difference between successive FNN values
+  differences <- diff(fnn_values)
+  
+  # Loop through the differences to find the point of maximum curvature (the elbow)
+  for (i in 2:(length(differences) - 2)) {
+    if (!is.na(differences[i]) && !is.na(differences[i + 1]) &&
+        differences[i] > differences[i + 1] && differences[i + 1] < differences[i + 2]) {
+      return(i + 1)  # Return the embedding dimension at the elbow
+    }
+  }
+  return(length(fnn_values))  # If no clear elbow is found, return the max embedding
+}
+# Randomly sample 5 dyads
+set.seed(123)  # Set seed for reproducibility
+dyads_to_sample <- sample(1:length(mea_normal), 5)
+
+# Initialize storage for delay and embedding dimensions
+delays <- c()
+embeddings <- c()
+
+for (i in 1:length(dyads_to_sample)) {
+  # Select the dyad
+  dyad_data <- mea_normal[[dyads_to_sample[i]]][[1]]
+  
+  # Extract participant time series
+  ts_participant1 <- dyad_data$Participant1
+  ts_participant2 <- dyad_data$Participant2
+  
+  # Select the middle 60% of the time series
+  ts_length <- length(ts_participant1)
+  start_idx <- floor(0.2 * ts_length) + 1
+  end_idx <- floor(0.8 * ts_length)
+  ts_participant1s <- ts_participant1[start_idx:end_idx]
+  ts_participant2s <- ts_participant2[start_idx:end_idx]
+  
+  # Determine delay using AMI
+  cross_ami_p1 <- mutual(ts_participant1s, lag.max = 800)
+  cross_ami_p2 <- mutual(ts_participant2s, lag.max = 800)
+  
+  chosen_delay_p1 <- find_first_minimum(cross_ami_p1)
+  chosen_delay_p2 <- find_first_minimum(cross_ami_p2)
+  cross_chosen_delay <- round(mean(c(chosen_delay_p1, chosen_delay_p2)))
+  delays <- c(delays, cross_chosen_delay)
+  
+  # Determine embedding dimension using FNN and find the elbow
+  cross_max_embedding <- 10
+  cross_fnn_p1 <- false.nearest(ts_participant1s, m = cross_max_embedding, d = cross_chosen_delay, t = 0)
+  cross_fnn_p2 <- false.nearest(ts_participant2s, m = cross_max_embedding, d = cross_chosen_delay, t = 0)
+  
+  elbow_p1 <- find_elbow(cross_fnn_p1)
+  elbow_p2 <- find_elbow(cross_fnn_p2)
+  cross_chosen_embedding <- round(mean(c(elbow_p1, elbow_p2)))
+  embeddings <- c(embeddings, cross_chosen_embedding)
+  
+  # Optionally, plot FNN or AMI here to visualize for each dyad
+  plot(cross_fnn_p1, type = "b", main = paste("Dyad", dyads_to_sample[i], "- FNN P1"))
+  plot(cross_fnn_p2, type = "b", main = paste("Dyad", dyads_to_sample[i], "- FNN P2"))
+}
+
+# Calculate the average delay and embedding dimension
+average_delay <- round(mean(delays, na.rm = TRUE))
+average_embedding <- round(mean(embeddings, na.rm = TRUE))
+
+cat("Average Delay: ", average_delay, "\n")
+cat("Average Embedding: ", average_embedding, "\n")
+```
+
+```{r function-for-all-data}
+# Function to extract the middle 60% of the time series
+get_middle_60_percent <- function(time_series) {
+  total_length <- length(time_series)
+  start_index <- floor(0.2 * total_length) + 1
+  end_index <- ceiling(0.8 * total_length)
+  return(time_series[start_index:end_index])
+}
+```
+
+# CREATE A FUNCTION TO RUN CRQA FOR ALL DYADS
+```{r crqa-function}
+# Define the function to process each dyad and run CRQA
+run_crqa_for_dyads <- function(df_list, cross_rescale_type, average_delay, average_embedding, cross_theiler_window) {
+  
+  # Create an empty list to store results
+  crqa_results <- list()
+  
+  # Loop through each dyad in df_list
+  for (dyad_name in names(df_list)) {
+    
+    # Check if the current dyad has both Participant 1 and Participant 2 time series
+    if (grepl("Participant1", dyad_name)) {
+      # Extract time series for Participant 1 and Participant 2
+      ts_participant1 <- df_list[[dyad_name]]  # e.g., Dyad1000_Participant1_MEA
+      ts_participant2 <- df_list[[gsub("Participant1", "Participant2", dyad_name)]]  # e.g., Dyad1000_Participant2_MEA
+
+      # Convert lists to numeric vectors
+      ts_participant1s <- unlist(ts_participant1)
+      ts_participant1s <- as.numeric(ts_participant1s)
+      ts_participant2s <- unlist(ts_participant2)
+      ts_participant2s <- as.numeric(ts_participant2s)
+      
+      # Get middle 60 percent of the time series
+      ts_participant1s <- get_middle_60_percent(ts_participant1s)
+      ts_participant2s <- get_middle_60_percent(ts_participant2s)
+      
+      # Cross-rescaling based on the provided option
+      if (cross_rescale_type == 'mean') {
+        rescaled_p1 <- ts_participant1s / mean(ts_participant1s)
+        rescaled_p2 <- ts_participant2s / mean(ts_participant2s)
+      } else if (cross_rescale_type == 'max') {
+        rescaled_p1 <- ts_participant1s / max(ts_participant1s)
+        rescaled_p2 <- ts_participant2s / max(ts_participant2s)
+      }
+      
+      # Perform the CRQA analysis
+      crqa_analysis <- crqa(ts1 = rescaled_p1,
+                            ts2 = rescaled_p2,
+                            delay = average_delay,
+                            embed = average_embedding,
+                            r = 0.1,
+                            normalize = 0,
+                            rescale = 0,
+                            mindiagline = 2,
+                            minvertline = 2,
+                            tw = cross_theiler_window,
+                            whiteline = FALSE,
+                            recpt = FALSE)
+      
+      # Extract the desired results from the CRQA analysis
+      crqa_results[[dyad_name]] <- list(
+        RR = crqa_analysis$RR,
+        DET = crqa_analysis$DET,
+        NRLINE = crqa_analysis$NRLINE,
+        maxL = crqa_analysis$maxL,
+        L = crqa_analysis$L,
+        ENTR = crqa_analysis$ENTR,
+        rENTR = crqa_analysis$rENTR,
+        LAM = crqa_analysis$LAM,
+        TT = crqa_analysis$TT
+      )
+    }
+  }
+  
+  return(crqa_results)
+}
+```
+
+
+``` {r run-all}
+# Define folder path
+MEA_folder_path2 <- "your_file_path"
+
+# List all .txt files
+txt_files <- list.files(path = MEA_folder_path2, pattern = "\\.txt$", full.names = TRUE)
+
+# Split the files into batches of 28
+batch_size <- 28
+batches <- split(txt_files, ceiling(seq_along(txt_files) / batch_size))
+
+# Create an empty dataframe to store all results
+all_results <- data.frame(Dyad = character(), stringsAsFactors = FALSE)
+
+# Loop through each batch
+for (i in seq_along(batches)) {
+  batch_files <- batches[[i]]
+  df_list <- list()
+  
+  # Read and store each file in df_list
+  for (file in batch_files) {
+    df <- read_delim(file, delim = "\t", col_names = FALSE)  # Adjust delimiter if necessary
+    base_name <- tools::file_path_sans_ext(basename(file))
+    df_list[[base_name]] <- df
+  }
+  
+  # Run CRQA function on the batch
+  batch_results <- run_crqa_for_dyads(df_list, cross_rescale_type, average_delay, average_embedding, cross_theiler_window)
+  
+  # Convert results list to a dataframe
+  batch_results_df <- do.call(rbind, lapply(names(batch_results), function(name) {
+    data.frame(Dyad = name, t(batch_results[[name]]))
+  }))
+  
+  # Append batch results to final dataframe
+  all_results <- rbind(all_results, batch_results_df)
+}
+
+print(all_results)
+
+all_results <- all_results
+```
+
+```{r}
+# View the first 10 rows of the CRQA
+all_results %>% head(10)
+```
+
+```{r clean-results}
+if ("Dyad" %in% names(all_results)) {
+  clean_results <- all_results 
+  
+  # Extract just the dyad number
+  clean_results$Dyad <- sub("_Participant[12]_MEA", "", clean_results$Dyad)
+}
+
+clean_results <- clean_results %>%
+  mutate(Dyad = as.numeric(sub("Dyad", "", Dyad))) %>%  # Extract and convert Dyad number
+  arrange(Dyad)
+
+# Print final, cleaned results
+print(head(clean_results))
+```
+```{r write-results-csv}
+clean_results <- clean_results %>%
+  mutate(across(where(is.list), ~sapply(., function(x) paste(unlist(x), collapse = ", "))))  # Flatten list columns
+
+write.csv(clean_results, file = "your_file_path", row.names = FALSE)
+```
+
+
+#Visualization and Explanation of a Few Dyads
+```{r explanation}
+# Randomly select 5 dyads to explain differences in metrics
+set.seed(123)  # Set seed for reproducibility
+sample_indices <- sample(nrow(clean_results), 5)
+sample_clean_results <- clean_results[sample_indices, ]
+sample_clean_results <- sample_clean_results %>% arrange(Dyad)
+
+print(sample_clean_results)
+```
+
+```{r plots}
+sample_clean_long <- sample_clean_results
+
+sample_clean_long <- sample_clean_long %>%
+  rename(
+    Determinism = DET,
+    Recurrence_Rate = RR,
+    Line_Length = NRLINE,
+    Max_Line_Length = maxL,
+    Average_Line_Length = L,
+    Entropy = ENTR,
+    Relative_Entropy = rENTR,
+    Laminarity = LAM,
+    Trapping_Time = TT
+  )
+
+sample_clean_long <- sample_clean_long %>%
+  pivot_longer(cols = c(Recurrence_Rate, Determinism, Line_Length, 
+                        Max_Line_Length, Average_Line_Length, Entropy, 
+                        Relative_Entropy, Laminarity, Trapping_Time),
+               names_to = "Metric",
+               values_to = "Value") %>%
+  mutate(Dyad = as.factor(Dyad), Value = as.numeric(Value))
+
+# Plot Metrics by 5 Random Dyads
+ggplot(sample_clean_long, aes(x = Dyad, y = Value, fill = Dyad)) +
+  geom_col(position = "dodge") + 
+  facet_wrap(~Metric, scales = "free_y") +
+  theme_minimal() +
+  labs(title = "Comparison of Dyads Across Metrics",
+       x = "Dyad",
+       y = "Value",
+       fill = "Dyad") +
+   scale_y_continuous(labels = scales::number_format(accuracy = 0.1)) +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1)) 
+
+```
+
+#Displaying Time Series Data
+```{r example-brown-bag-dyad-102}
+path_normal102 <- read.table("your_file_path", quote="\"", comment.char="")
+path_normal102 <- as.numeric(path_normal102$V1)
+output_file_path <- "your_file_path"
+
+# Save the dataframe as a tab-delimited text file
+write.table(path_normal102, file = output_file_path, sep = "\t", quote = FALSE, row.names = FALSE)
+
+
+# Use the temporary file as input to readMEA function
+
+mea_normal102 <- readMEA("your_file_path", sampRate = 25, s1Col = 1:1, s2Col = 2:2,
+                        s1Name = "Participant1", s2Name = "Participant2", skip = 1,
+                        idOrder = c("id", "session"), idSep = "_")
+
+
+diagnosticPlot(mea_normal102[[1]])
+
+mea_normal102_1 <- readMEA("your_file_path", sampRate = 25, s1Col = 1:1, s2Col = 1:1,
+                        s1Name = "Participant1", s2Name = NA, skip = 1,
+                        idOrder = c("id", "session"), idSep = "_")
+
+
+mea_normal102_2 <- readMEA("your_file_path", sampRate = 25, s1Col = 2:2, s2Col = 2:2,
+                        s1Name = NA, s2Name = "Participant2", skip = 1,
+                        idOrder = c("id", "session"), idSep = "_")
+
+diagnosticPlot(mea_normal102[[1]])
+diagnosticPlot(mea_normal102_1[[1]])
+diagnosticPlot(mea_normal102_2[[1]])
+```
+
+
+```{r crqa-dyad-102}
+dyad102_data <- mea_normal[[3]] # this reflects the dyad order
+
+# Assuming the dataframe has columns for two participants
+dyad102_data2 <- dyad102_data[[1]] # this will always be 1
+ts_participant1 <- dyad102_data2$Participant1  # Time series for Participant 1
+ts_participant2 <- dyad102_data2$Participant2 
+
+# ts_participant1s <- ts_participant1[4610:13829]
+# ts_participant2s <- ts_participant2[4610:13829]
+
+get_middle_60_percent <- function(time_series) {
+  total_length <- length(time_series)  # Get the total length of the time series
+  
+  # Calculate the indices for the middle 60%
+  start_index <- floor(0.2 * total_length) + 1  # Start after the first 20%
+  end_index <- ceiling(0.8 * total_length)      # End before the last 20%
+  
+  # Select the middle 60% of the time series
+  middle_60 <- time_series[start_index:end_index]
+  
+  return(middle_60)
+}
+
+ts_participant1s <- get_middle_60_percent(ts_participant1)
+ts_participant2s <- get_middle_60_percent(ts_participant2)
+
+cross_ami_p1 = mutual(ts_participant1s,
+                 lag.max = 800)
+
+cross_ami_p2 = mutual(ts_participant2s,
+                     lag.max = 800)
+
+
+find_first_minimum <- function(ami_values) {
+  for (i in 2:(length(ami_values) - 1)) {
+    if (ami_values[i] < ami_values[i - 1] && ami_values[i] < ami_values[i + 1]) {
+      return(i)  # Return the lag corresponding to the first local minimum
+    }
+  }
+  return(NULL)  # Return NULL if no minimum is found
+}
+# radius dyad 102
+if (cross_rescale_type == 'mean'){
+  rescaled_p1 = ts_participant1s / mean(ts_participant1s)
+  rescaled_p2 = ts_participant2s / mean(ts_participant2s)
+} else if (cross_rescale_type == 'max'){
+  rescaled_p1 = ts_participant1s / max(ts_participant1s)
+  rescaled_p2 = ts_participant2s / max(ts_participant2s)
+}
+
+crqa_analysis102 = crqa(ts1 = rescaled_p1, 
+                    ts2 = rescaled_p2,
+                    delay = average_delay, 
+                    embed = average_embedding, 
+                    r = .1, # you can keep playing with this to find something that works
+                    normalize = 0, 
+                    rescale = 0, # distance matrix rescaling option -- see documentation
+                    mindiagline = 2,
+                    minvertline = 2, 
+                    tw = cross_theiler_window, 
+                    whiteline = FALSE,
+                    recpt=FALSE)
+```
+
+```{r}
+#RESULTS FOR CRQA SAMPLE
+crqa_analysis$RR # rate of recurrence
+crqa_analysis$DET # % determinism
+crqa_analysis$NRLINE # total number of lines on the plot
+crqa_analysis$maxL # maximum line length on plot
+crqa_analysis$L # average line length on plot
+crqa_analysis$ENTR # entropy
+crqa_analysis$rENTR # normalized entropy
+crqa_analysis$LAM # laminarity
+crqa_analysis$TT # trapping time
+```
+
+
+```{r export-results-csv}
+# Create the data frame while checking for missing values
+crqa_df <- data.frame(
+  RR = ifelse(length(crqa_analysis$RR) > 0, crqa_analysis$RR, NA),
+  DET = ifelse(length(crqa_analysis$DET) > 0, crqa_analysis$DET, NA),
+  NRLINE = ifelse(length(crqa_analysis$NRLINE) > 0, crqa_analysis$NRLINE, NA),
+  maxL = ifelse(length(crqa_analysis$maxL) > 0, crqa_analysis$maxL, NA),
+  L = ifelse(length(crqa_analysis$L) > 0, crqa_analysis$L, NA),
+  ENTR = ifelse(length(crqa_analysis$ENTR) > 0, crqa_analysis$ENTR, NA),
+  rENTR = ifelse(length(crqa_analysis$rENTR) > 0, crqa_analysis$rENTR, NA),
+  LAM = ifelse(length(crqa_analysis$LAM) > 0, crqa_analysis$LAM, NA),
+  TT = ifelse(length(crqa_analysis$TT) > 0, crqa_analysis$TT, NA)
+)
+
+# Export the results to a CSV file
+write.csv(crqa_df, file = "your_file_path", row.names = FALSE)
+
+```
+
+```{r}
+crqa_df = data.frame(points = crqa_analysis$RP@i,
+                           loc = seq_along(crqa_analysis$RP@i))
+ggplot(crqa_df,aes(x=points,
+                        y=loc)) +
+  geom_point(color="black",size=.01) +
+  theme_classic() +
+  theme(legend.position="none", axis.text.x = element_blank(), axis.text.y = element_blank()) +
+  ylab("Participant 2") + xlab("Participant 1") +
+  ggtitle("Cross-recurrence plot between\nParticipant 1 and Participant 2 Movement in Survivor Task")
+```
+
+

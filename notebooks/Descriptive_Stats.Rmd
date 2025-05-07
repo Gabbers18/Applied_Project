@@ -1,0 +1,106 @@
+---
+title: "Descriptives_Results"
+output: html_document
+date: "2025-04-14"
+---
+
+```{r libraries}
+library(dplyr)
+library(ggplot2)
+library(plyr)
+library(tidyr)
+```
+
+
+# Open results
+```{r results}
+results <- read.csv("your_path_to_CRQA_Results")
+```
+
+# Normalize Results
+```{r normalize}
+results_scaled <- results %>%
+  mutate(across(c(RR, DET, maxL, NRLINE, L, ENTR, rENTR, LAM, TT),
+                ~ scale(.) %>% as.numeric()))
+
+results_scaled <- results_scaled %>%
+  mutate(
+    RR     = (RR     - min(RR,     na.rm = TRUE)) / (max(RR,     na.rm = TRUE) - min(RR,     na.rm = TRUE)),
+    DET    = (DET    - min(DET,    na.rm = TRUE)) / (max(DET,    na.rm = TRUE) - min(DET,    na.rm = TRUE)),
+    rENTR  = (rENTR  - min(rENTR,  na.rm = TRUE)) / (max(rENTR,  na.rm = TRUE) - min(rENTR,  na.rm = TRUE)),
+    LAM    = (LAM    - min(LAM,    na.rm = TRUE)) / (max(LAM,    na.rm = TRUE) - min(LAM,    na.rm = TRUE))
+  )
+
+# fix this scale for the unbounded metrics
+results_scaled2 <- results_scaled %>%
+  mutate( maxL   = (maxL   - min(maxL,   na.rm = TRUE)) / (max(maxL,   na.rm = TRUE) - min(maxL,   na.rm = TRUE)),
+    NRLINE = (NRLINE - min(NRLINE, na.rm = TRUE)) / (max(NRLINE, na.rm = TRUE) - min(NRLINE, na.rm = TRUE)),
+    L      = (L      - min(L,      na.rm = TRUE)) / (max(L,      na.rm = TRUE) - min(L,      na.rm = TRUE)),
+    ENTR   = (ENTR   - min(ENTR,   na.rm = TRUE)) / (max(ENTR,   na.rm = TRUE) - min(ENTR,   na.rm = TRUE)),
+    TT     = (TT     - min(TT,     na.rm = TRUE)) / (max(TT,     na.rm = TRUE) - min(TT,     na.rm = TRUE))
+  )
+```
+
+# Generate Descriptives
+```{r descriptives}
+descriptives_results <- results_scaled %>%
+  group_by(Dyad) %>%
+  summarise(
+    mean_RR     = mean(RR, na.rm = TRUE),
+    sd_RR       = sd(RR, na.rm = TRUE),
+    min_RR      = min(RR, na.rm = TRUE),
+    max_RR      = max(RR, na.rm = TRUE),
+    
+    mean_DET    = mean(DET, na.rm = TRUE),
+    sd_DET      = sd(DET, na.rm = TRUE),
+    min_DET     = min(DET, na.rm = TRUE),
+    max_DET     = max(DET, na.rm = TRUE),
+    
+    mean_maxL   = mean(maxL, na.rm = TRUE),
+    sd_maxL     = sd(maxL, na.rm = TRUE),
+    min_maxL    = min(maxL, na.rm = TRUE),
+    max_maxL    = max(maxL, na.rm = TRUE),
+    
+    mean_NRLINE = mean(NRLINE, na.rm = TRUE),
+    sd_NRLINE   = sd(NRLINE, na.rm = TRUE),
+    min_NRLINE  = min(NRLINE, na.rm = TRUE),
+    max_NRLINE  = max(NRLINE, na.rm = TRUE),
+    
+    mean_L      = mean(L, na.rm = TRUE),
+    sd_L        = sd(L, na.rm = TRUE),
+    min_L       = min(L, na.rm = TRUE),
+    max_L       = max(L, na.rm = TRUE),
+    
+    mean_ENTR   = mean(ENTR, na.rm = TRUE),
+    sd_ENTR     = sd(ENTR, na.rm = TRUE),
+    min_ENTR    = min(ENTR, na.rm = TRUE),
+    max_ENTR    = max(ENTR, na.rm = TRUE),
+    
+    mean_rENTR  = mean(rENTR, na.rm = TRUE),
+    sd_rENTR    = sd(rENTR, na.rm = TRUE),
+    min_rENTR   = min(rENTR, na.rm = TRUE),
+    max_rENTR   = max(rENTR, na.rm = TRUE),
+    
+    mean_LAM    = mean(LAM, na.rm = TRUE),
+    sd_LAM      = sd(LAM, na.rm = TRUE),
+    min_LAM     = min(LAM, na.rm = TRUE),
+    max_LAM     = max(LAM, na.rm = TRUE),
+    
+    mean_TT     = mean(TT, na.rm = TRUE),
+    sd_TT       = sd(TT, na.rm = TRUE),
+    min_TT      = min(TT, na.rm = TRUE),
+    max_TT      = max(TT, na.rm = TRUE)
+  ) %>% 
+  pivot_longer(
+    cols = everything(), 
+               names_to = c("metrics", "stat"),
+               names_sep = "_",
+               values_to = "value") %>%
+  pivot_wider(names_from = metrics, values_from = value)
+```
+
+# Export as CSV
+```{r csv}
+write.csv(descriptives_results, file = "your_path_to_save_to", row.names = FALSE)
+```
+
