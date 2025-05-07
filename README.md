@@ -91,7 +91,7 @@ Item descriptions:
 - The path for this code **must** be a folder, not individual files
 - This code utilizes a folder containing **only** .txt files; see [Example_MEA.Rmd](https://github.com/Gabbers18/Applied_Project/blob/main/Examples/Example_MEA.Rmd) for how to run other file types
 - This package is useful for naming columns and parsing columns appropriately
-- Useful for visualing the time series data; see [Example_MEA.Rmd diagnostic plots](https://github.com/Gabbers18/Applied_Project/blob/main/Examples/Example_MEA.Rmd)
+- Useful for visualing the time series data; see [Example_MEA.Rmd](https://github.com/Gabbers18/Applied_Project/blob/main/Examples/Example_MEA.Rmd)  diagnostic plots
 
 ### Structure of mea_normal Output list
 ```
