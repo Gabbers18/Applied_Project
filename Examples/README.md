@@ -239,6 +239,11 @@ crqa_analysis$rENTR # normalized entropy
 crqa_analysis$LAM # laminarity
 crqa_analysis$TT # trapping time
 ```
+or, you can use 
+
+```r
+print(crqa_analysis)
+```
 
 ## Example Visualization
 For this example, I chose to include two methods of visualizing the analysis. The first method utilizes the function 'plotRP()' which is from the 'crqa' library. The second method I used 'ggplot.'
