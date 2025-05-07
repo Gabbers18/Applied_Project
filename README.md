@@ -17,9 +17,9 @@ may be important to know for training purposes or within other contexts (Angus e
 
 ```
 Applied_Project/
-├── data/                          # Raw and processed data files
-│   ├── raw/                       # Original, unprocessed data
-│   └── processed/                 # Cleaned and processed data
+├── data/                          
+│   ├── TxtFiles_cleaned/          # Files derived from MEA
+│   └── cleaned_qualtrics/         # Survey & Task data - for calculating change scores
 ├── notebooks/                     # R Markdown notebooks
 │   ├── CRQA_Full.Rmd              # Comprehensive CRQA analysis
 │   ├── ChangeScores_Full.Rmd
