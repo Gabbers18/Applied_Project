@@ -19,7 +19,7 @@ may be important to know for training purposes or within other contexts (Angus e
 Applied_Project/
 ├── data/                          
 │   ├── TxtFiles_cleaned/          # Files derived from MEA
-│   └── cleaned_qualtrics/         # Survey & Task data - for calculating change scores
+│   └── cleaned_qualtrics.csv/     # Survey & Task data - for calculating change scores
 ├── notebooks/                     # R Markdown notebooks
 │   ├── CRQA_Full.Rmd              # Comprehensive CRQA analysis
 │   ├── ChangeScores_Full.Rmd
