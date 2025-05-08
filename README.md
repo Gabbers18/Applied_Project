@@ -168,8 +168,33 @@ In this case I chose a radius of **0.1**. This small value **increases** the sen
 radius = .1
 ```
 
+## Step 2: Create a Random Sample
 
-## Delay
+First, we will set a seed for reproducibility.
+
+**Example in R:**
+```r
+set.seed(123)
+```
+
+Second, we will take a random sample of 5 dyads.
+
+Sampling Justification:
+- Our data contains files between 12,000-21,000 rows, making full-scale computations resource-intensive
+- Sampling a smaller subset allows for efficient parameter estimation, without processing the entire dataset.
+
+**Example in R:**
+```r
+dyads_to_sample <- sample(1:length(mea_normal), 5)
+```
+
+## Step 3: Create Functions for Parameter Calculation
+
+We will be calculating
+1) Delay
+2) Embedding Dimension
+
+**1) Delay**
 Delay is a parameter set within CRQA which refer to the time lag between data points used to reconstruct the phase space of a time series. It determines how far apart in time the data points are when assessing their similarity or synchronization.
 
 Delay is a parameter used in CRQA that refers to the **time lag between data points** used to reconstruct the phase space of a time series. It determines how far apart in time the data points are when assessing similarity or synchronization.
@@ -180,7 +205,7 @@ Delay is a parameter used in CRQA that refers to the **time lag between data poi
 * AMI measures the amount of shared information between the original time series and its delayed version.
 * The **first local minimum** in the AMI curve indicates the optimal delay—this is the point where each successive data point provides the most new information.
 
-### Example in R:
+**Function to calcualte AMI:**
 
 ```{r find-first-minimum}
 find_first_minimum <- function(ami_values) {
@@ -193,22 +218,149 @@ find_first_minimum <- function(ami_values) {
 }
 ```
 
-## Step 2: Calculate Parameters
+**2) Embedding Dimension**
+The embedding dimension determines the **number of consecutive data points** used to reconstruct the system’s state space. It captures how many dimensions are needed to unfold the underlying dynamics of the system without overlaps or false trajectories.
 
-We will be calculating
-1) Delay
-2) Embedding Dimension
+### How Embedding Dimension is Determined:
 
+* Typically selected using the **False Nearest Neighbors (FNN)** algorithm.
+* FNN identifies the minimum number of dimensions where false neighbors (points that appear close due to projection in low dimensions) are minimized.
+* The optimal embedding dimension is where the **percentage of false neighbors drops to near zero or levels off**, meaning the system’s dynamics are well represented.
 
-First, we will set a seed for reproducibility.
-** Example in R:**
+**Function to caculate FNN**
+
 ```r
-# Randomly sample 5 dyads
-set.seed(123)
-dyads_to_sample <- sample(1:length(mea_normal), 5)
-```
-** 2)Embedding Dimension**
+# Calculate FNN with previously selected delay
+fnn_values <- false.nearest(ts_data, m = 20, d = optimal_delay, t = 0)
 
+# Extract the fraction of false neighbors
+fraction_values <- as.numeric(fnn_values["fraction", ])
+fraction_values <- fraction_values[!is.na(fraction_values)]
+
+# Find the first local minimum (drop in false neighbors)
+embedding_dimension <- which(diff(sign(diff(fraction_values))) > 0) + 1
+embedding_dimension <- embedding_dimension[1]
+```
+## Step 4: Calculate Delay and Embedding Dimension Parameters
+
+**First, initialize storage for parameters.**
+
+Set up empty vectors to store the computed delay and embedding dimension values for each sampled dyad.
+```r
+delays <- c()
+embeddings <- c()
+```
+
+
+**Second, iterate over our selected sampled dyads.**
+
+Loop through each dyad selected in the `dyads_to_sample` vector to perform the analysis.
+```r
+for (i in 1:length(dyads_to_sample)) {
+  # Analysis steps for each dyad
+}
+```
+
+
+Within the loop:
+
+**Select dyad data**
+
+Extract the data for the current dyad from the `mea_normal` list.
+
+```r
+dyad_data <- mea_normal[[dyads_to_sample[i]]][[1]]
+```
+
+
+**Third, extract individual participant time series.**
+
+Retrieve the time series data for Participant 1 and Participant 2.
+
+```r
+ts_participant1 <- dyad_data$Participant1
+ts_participant2 <- dyad_data$Participant2
+```
+
+**Fourth, select middle 60% of time series**
+**Purpose:**
+To mitigate memory-related errors during analysis, particularly when working with large time series datasets.
+
+**Background:**
+Processing extensive time series data (e.g., datasets exceeding 12,000 rows) can lead to memory exhaustion errors in R, especially when using the 'crqa()' function. You may recieve warnings such as:
+
+```
+Warning: sparse->dense coercion: allocating vector of size 1.2 GiB
+Error: vector memory exhausted (limit reached?)
+```
+
+These errors occur when R attempts to convert large sparse matrices into dense ones, consuming significant memory resources. This is especially pertinent when using packages like `crqa`, which may not efficiently handle very large datasets.
+
+**Solution:**
+To address this, focus on the central portion of the time series data:
+
+* **Select the Middle 60%:**
+By analyzing the central 60% of the time series, you reduce the dataset size, thereby decreasing memory usage and avoiding edge effects that can distort analysis.
+
+**Example in R:**
+```r
+get_middle_60_percent <- function(time_series) {
+  total_length <- length(time_series)
+  start_index <- floor(0.2 * total_length) + 1
+  end_index <- ceiling(0.8 * total_length)
+  return(time_series[start_index:end_index])
+}
+```
+
+**Benefits:**
+
+- Reduces the risk of memory exhaustion errors.
+- Enhances computational efficiency.
+- Maintains the integrity of the analysis by focusing on the most stable segment of the data.
+
+#### d. **Determine Delay Using Average Mutual Information (AMI)**
+
+Compute the AMI for each participant's time series to identify the optimal delay.
+
+```r
+cross_ami_p1 <- mutual(ts_participant1s, lag.max = 800)
+cross_ami_p2 <- mutual(ts_participant2s, lag.max = 800)
+
+chosen_delay_p1 <- find_first_minimum(cross_ami_p1)
+chosen_delay_p2 <- find_first_minimum(cross_ami_p2)
+cross_chosen_delay <- round(mean(c(chosen_delay_p1, chosen_delay_p2)))
+delays <- c(delays, cross_chosen_delay)
+```
+
+* `mutual()` computes the mutual information for a range of lags.
+* `find_first_minimum()` identifies the first local minimum in the mutual information, suggesting an optimal delay.
+
+#### e. **Determine Embedding Dimension Using False Nearest Neighbors (FNN)**
+
+Apply the FNN method to estimate the appropriate embedding dimension.([RDocumentation][1])
+
+```r
+cross_max_embedding <- 10
+cross_fnn_p1 <- false.nearest(ts_participant1s, m = cross_max_embedding, d = cross_chosen_delay, t = 0)
+cross_fnn_p2 <- false.nearest(ts_participant2s, m = cross_max_embedding, d = cross_chosen_delay, t = 0)
+
+elbow_p1 <- find_elbow(cross_fnn_p1)
+elbow_p2 <- find_elbow(cross_fnn_p2)
+cross_chosen_embedding <- round(mean(c(elbow_p1, elbow_p2)))
+embeddings <- c(embeddings, cross_chosen_embedding)
+```
+
+* `false.nearest()` calculates the fraction of false nearest neighbors for different embedding dimensions.
+* `find_elbow()` identifies the "elbow point" in the FNN results, indicating the optimal embedding dimension.([R Package Documentation][2])
+
+#### f. **Optional: Visualize FNN Results**
+
+Plot the FNN results for each participant to visually assess the embedding dimension selection.
+
+```r
+plot(cross_fnn_p1, type = "b", main = paste("Dyad", dyads_to_sample[i], "- FNN P1"))
+plot(cross_fnn_p2, type = "b", main = paste("Dyad", dyads_to_sample[i], "- FNN P2"))
+```
 
 ## Final_CRQA_Results.csv  
 this is what you use for the descriptive results analyses
