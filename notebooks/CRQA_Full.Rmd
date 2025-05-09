@@ -21,7 +21,7 @@ library(scales)
 ## Part 1: Motion Energy Analysis (MEA)
 
 ```{r MEA}
-mea_normal <- readMEA("/Users/gabrielleyoung/Desktop/DataAP/TxtFiles_cleaned", 
+mea_normal <- readMEA("your_folder_path_to_MEA_files", 
 sampRate = 25, s1Col = 2, s2Col = 1,
                      s1Name = "Participant2", s2Name = "Participant1", skip=1,
                      idOrder = c("id","session"), idSep="_")
