@@ -194,7 +194,8 @@ We will be calculating
 1) Delay
 2) Embedding Dimension
 
-**1) Delay**
+###**1) Delay**
+
 Delay is a parameter set within CRQA which refer to the time lag between data points used to reconstruct the phase space of a time series. It determines how far apart in time the data points are when assessing their similarity or synchronization.
 
 Delay is a parameter used in CRQA that refers to the **time lag between data points** used to reconstruct the phase space of a time series. It determines how far apart in time the data points are when assessing similarity or synchronization.
@@ -218,7 +219,8 @@ find_first_minimum <- function(ami_values) {
 }
 ```
 
-**2) Embedding Dimension**
+###**2) Embedding Dimension**
+
 The embedding dimension determines the **number of consecutive data points** used to reconstruct the system’s state space. It captures how many dimensions are needed to unfold the underlying dynamics of the system without overlaps or false trajectories.
 
 ### How Embedding Dimension is Determined:
@@ -241,9 +243,10 @@ fraction_values <- fraction_values[!is.na(fraction_values)]
 embedding_dimension <- which(diff(sign(diff(fraction_values))) > 0) + 1
 embedding_dimension <- embedding_dimension[1]
 ```
+
 ## Step 4: Calculate Delay and Embedding Dimension Parameters
 
-**First, initialize storage for parameters.**
+###**First, initialize storage for parameters.**
 
 Set up empty vectors to store the computed delay and embedding dimension values for each sampled dyad.
 ```r
@@ -252,7 +255,7 @@ embeddings <- c()
 ```
 
 
-**Second, iterate over our selected sampled dyads.**
+###**Second, iterate over our selected sampled dyads.**
 
 Loop through each dyad selected in the `dyads_to_sample` vector to perform the analysis.
 ```r
@@ -264,7 +267,7 @@ for (i in 1:length(dyads_to_sample)) {
 
 Within the loop:
 
-**Select dyad data**
+###**Select dyad data**
 
 Extract the data for the current dyad from the `mea_normal` list.
 
@@ -273,7 +276,7 @@ dyad_data <- mea_normal[[dyads_to_sample[i]]][[1]]
 ```
 
 
-**Third, extract individual participant time series.**
+###**Third, extract individual participant time series.**
 
 Retrieve the time series data for Participant 1 and Participant 2.
 
@@ -282,11 +285,12 @@ ts_participant1 <- dyad_data$Participant1
 ts_participant2 <- dyad_data$Participant2
 ```
 
-**Fourth, select middle 60% of time series**
-**Purpose:**
+###**Fourth, select middle 60% of time series**
+
+<ins>**Purpose:**<ins>
 To mitigate memory-related errors during analysis, particularly when working with large time series datasets.
 
-**Background:**
+<ins>**Background:**<ins>
 Processing extensive time series data (e.g., datasets exceeding 12,000 rows) can lead to memory exhaustion errors in R, especially when using the 'crqa()' function. You may recieve warnings such as:
 
 ```
@@ -296,7 +300,7 @@ Error: vector memory exhausted (limit reached?)
 
 These errors occur when R attempts to convert large sparse matrices into dense ones, consuming significant memory resources. This is especially pertinent when using packages like `crqa`, which may not efficiently handle very large datasets.
 
-**Solution:**
+<ins>**Solution:**<ins>
 To address this, focus on the central portion of the time series data:
 
 * **Select the Middle 60%:**
