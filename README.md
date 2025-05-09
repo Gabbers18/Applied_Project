@@ -221,7 +221,7 @@ find_first_minimum <- function(ami_values) {
 
 ### 2) Embedding Dimension
 
-The embedding dimension determines the **number of consecutive data points** used to reconstruct the system’s state space. It captures how many dimensions are needed to unfold the underlying dynamics of the system without overlaps or false trajectories.
+Determines the **number of consecutive data points** used to reconstruct the system’s state space. It captures how many dimensions are needed to unfold the underlying dynamics of the system without overlaps or false trajectories.
 
 ### How Embedding Dimension is Determined:
 
@@ -248,7 +248,7 @@ embedding_dimension <- embedding_dimension[1]
 
 ### First, initialize storage for parameters.
 
-Set up empty vectors to store the computed delay and embedding dimension values for each sampled dyad.
+- Set up empty vectors to store the computed delay and embedding dimension values for each sampled dyad.
 ```r
 delays <- c()
 embeddings <- c()
@@ -256,7 +256,7 @@ embeddings <- c()
 
 ### Second, iterate over our selected sampled dyads.
 
-Loop through each dyad selected in the `dyads_to_sample` vector to perform the analysis.
+- Loop through each dyad selected in the `dyads_to_sample` vector to perform the analysis.
 ```r
 for (i in 1:length(dyads_to_sample)) {
   # Analysis steps for each dyad
@@ -267,7 +267,7 @@ Within the loop:
 
 ### Select dyad data
 
-Extract the data for the current dyad from the `mea_normal` list.
+- Extract the data for the current dyad from the `mea_normal` list.
 
 ```r
 dyad_data <- mea_normal[[dyads_to_sample[i]]][[1]]
@@ -276,7 +276,7 @@ dyad_data <- mea_normal[[dyads_to_sample[i]]][[1]]
 
 ### Third, extract individual participant time series.
 
-Retrieve the time series data for Participant 1 and Participant 2.
+- Retrieve the time series data for Participant 1 and Participant 2.
 
 ```r
 ts_participant1 <- dyad_data$Participant1
@@ -322,7 +322,7 @@ get_middle_60_percent <- function(time_series) {
 
 ### Fifth: Determine Delay Using Average Mutual Information (AMI)
 
-Compute the AMI for each participant's time series to identify the optimal delay using the functions we created in **Step 3.**
+- Compute the AMI for each participant's time series to identify the optimal delay using the functions we created in **Step 3.**
 
 ```r
 cross_ami_p1 <- mutual(ts_participant1s, lag.max = 800)
@@ -339,7 +339,7 @@ delays <- c(delays, cross_chosen_delay)
 
 ### Sixth: Determine Embedding Dimension Using FNN
 
-Apply the FNN method to estimate the appropriate embedding dimension.
+- Apply the FNN method to estimate the appropriate embedding dimension.
 
 ```r
 cross_max_embedding <- 10
@@ -357,7 +357,7 @@ embeddings <- c(embeddings, cross_chosen_embedding)
 
 ### Optional: Visualize FNN Results
 
-Plot the FNN results for each participant to visually assess the embedding dimension selection.
+- Plot the FNN results for each participant to visually assess the embedding dimension selection.
 
 ```r
 plot(cross_fnn_p1, type = "b", main = paste("Dyad", dyads_to_sample[i], "- FNN P1"))
@@ -366,8 +366,8 @@ plot(cross_fnn_p2, type = "b", main = paste("Dyad", dyads_to_sample[i], "- FNN P
 
 ### Seventh: Average the Parameters
 
-Average out the calculated delays and embedding dimensions across the five sampled dyads.
-Save these variables as `average_delay` and `average_embedding` to be used later in our CRQA calculations.
+- Average out the calculated delays and embedding dimensions across the five sampled dyads.
+- Save these variables as `average_delay` and `average_embedding` to be used later in our CRQA calculations.
 
 ```r
 average_delay <- round(mean(delays, na.rm = TRUE))
@@ -381,8 +381,8 @@ cat("Average Embedding: ", average_embedding, "\n")
 
 ### First: Define the Function and Initialize Storage
 
-Here, we utilize the parameters we have named and calculated previously as inputs.
-- 
+- Here, we utilize the parameters we have named and calculated previously as inputs.
+
 **Example in R:**
 ```r
 run_crqa_for_dyads <- function(df_list, cross_rescale_type, average_delay, average_embedding, cross_theiler_window) {
@@ -423,7 +423,7 @@ ts_participant2s <- as.numeric(ts_participant2s)
 
 ### Fourth: Trim Time Series Data
 
-Focus on the central portion to mitigate edge effects using our 60% function
+- Focus on the central portion to mitigate edge effects using our 60% function
 
 ```r
 ts_participant1s <- get_middle_60_percent(ts_participant1s)
@@ -432,7 +432,7 @@ ts_participant2s <- get_middle_60_percent(ts_participant2s)
 
 ### Fifth: Rescale Time Series
 
-Normalize the time series data based on the specified rescaling method to ensure comparability between participants.
+- Normalize the time series data based on the specified rescaling method to ensure comparability between participants.
 
 **Example in R:**
 ```r
@@ -482,26 +482,26 @@ crqa_results[[dyad_name]] <- list(
 
 ### First: Define the Data Source and Prepare Batches
 
-Here, we process multiple `.txt` files containing dyadic time series data:
+- Here, we process multiple `.txt` files containing dyadic time series data:
 
 ```r
 MEA_folder_path <- "your_folder_path"
 ```
 
-This retrieves all files ending with `.txt` in the given directory:
+- This retrieves all files ending with `.txt` in the given directory:
 
 ```r
 txt_files <- list.files(path = MEA_folder_path2, pattern = "\\.txt$", full.names = TRUE)
 ```
 
-This divides the list of files into smaller groups (batches) of 28 files each:
+- This divides the list of files into smaller groups (batches) of 28 files each:
 
 ```r
 batch_size <- 28
 batches <- split(txt_files, ceiling(seq_along(txt_files) / batch_size))
 ```
 
-Here, we initialize an empty dataframe to store the results:
+- Here, we initialize an empty dataframe to store the results:
 
 ```r
 all_results <- data.frame(Dyad = character(), stringsAsFactors = FALSE)
@@ -509,9 +509,9 @@ all_results <- data.frame(Dyad = character(), stringsAsFactors = FALSE)
 
 ### Second, Process Each Batch and Apply the CRQA Function
 
-For each batch of files, the code reads the data, organizes it, and applies the `run_crqa_for_dyads` function.
+- For each batch of files, the code reads the data, organizes it, and applies the `run_crqa_for_dyads` function.
 
-# Create an empty dataframe to store all results
+### Create an empty dataframe to store all results
 ```r
 all_results <- data.frame(Dyad = character(), stringsAsFactors = FALSE)
 ```
@@ -550,7 +550,7 @@ print(all_results)
 
 ### Fourth, Clean and Export the Final Results
 
-After processing all batches, the results are cleaned and saved for further analysis.
+After processing all batches, the results are cleaned and saved for further analysis:
 
 - Clean the Dyad Names
 - Convert Dyad Identifiers to Numeric and Sort
