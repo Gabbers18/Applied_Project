@@ -113,7 +113,6 @@ for (i in 1:length(dyads_to_sample)) {
   cross_chosen_embedding <- round(mean(c(elbow_p1, elbow_p2)))
   embeddings <- c(embeddings, cross_chosen_embedding)
   
-  # Optionally, plot FNN or AMI here to visualize for each dyad
   plot(cross_fnn_p1, type = "b", main = paste("Dyad", dyads_to_sample[i], "- FNN P1"))
   plot(cross_fnn_p2, type = "b", main = paste("Dyad", dyads_to_sample[i], "- FNN P2"))
 }
@@ -212,7 +211,7 @@ run_crqa_for_dyads <- function(df_list, cross_rescale_type, average_delay, avera
 ### Using the Function
 ``` {r run-all}
 # Define folder path
-MEA_folder_path2 <- "/Users/gabrielleyoung/Desktop/DataAP/Individual_MEA_Files2"
+MEA_folder_path2 <- "your_folder_path"
 
 # List all .txt files
 txt_files <- list.files(path = MEA_folder_path2, pattern = "\\.txt$", full.names = TRUE)
