@@ -1,16 +1,14 @@
 # Applied Project (Fall 2023-Spring 2025)
+# Persuasion THrough Synchronization: Examining the Impact of Movement on Persuasion in Social Interactions
+
+#### By: Gabrielle Young; Advisor: Dr. Nicholas Duran
 
 ## Overview
-This study utilizes MEA in conjuction with CRQA to conduct continuous data anlaysis on experimental data.
+This study examines how individuals coordinate movements and language during shared tasks by analyzing real-time multimodal data. Employing Cross-Recurrence Quantification Analysis (CRQA), the research identifies initiator and responder roles through movement patterns. Additionally, Motion Energy Analysis (MEA) techniques are applied to extract motion energies of each participant, aiming to uncover interaction dynamics that may inform training and other applications.
 
-This study seeks to uncover the reasoning behind how people coordinate movements and language through a common task. 
-Examining multiple channels simultaneously requires a more “data-driven” approach (Yu et al., 2010). This approach utilizes 
-technologies that capture fine-grained multimodal data recorded in real-time, as well as data mining techniques that extract 
-meaningful patterns. In the case of this study, we seek to examine the emergence of initiator/responder roles through movement
-recurrences utilizing Cross-Recurrence Quantification Analysis (CRQA). Analyses, such as CRQA, are useful in uncovering hidden 
-patterns between multiple people that may have been overlooked by human observers. We also utilize Ramseyer's Motion Energy Analysis (MEA)
-techniques to extract motion energies of each individual in the task. The goal of these analyses is to identify anomalies or patterns that 
-may be important to know for training purposes or within other contexts (Angus et al., 2012).
+## Research Questions
+1) How does movement synchronization affect persuasion?
+2) How does movement specialization (initiator/responder roles) affect persuasion?
 
 
 ## Repository Structure
@@ -22,22 +20,22 @@ Applied_Project/
 │   └── cleaned_qualtrics.csv/     # Survey & Task data - for calculating change scores
 ├── notebooks/                     # R Markdown notebooks
 │   ├── CRQA_Full.Rmd              # Comprehensive CRQA analysis
-│   ├── ChangeScores_Full.Rmd
+│   ├── ChangeScores_Full.Rmd      # Persuasion Score Calculation using cleaned_qualtrics.csv
 │   └── Descriptive_Stats.Rmd      # Descriptive statistics of Final_CRQA_Results.csv  
-├── results/
-│   ├── ALLDataChangeScores.csv                   
+├── results/                       # Output results from analyses
+│   ├── ALLDataChangeScores.csv                  
 │   ├── CRQA_Descriptives_Results.csv                 
 │   └── Final_CRQA_Results.csv                  
-├── Examples/                      # Example usage scripts
+├── Examples/                      # Example usage scripts with data
 │   ├── Example_CRQA.Rmd         
 │   ├── Example_MEA.Rmd
 │   ├── README.md     
 │   ├── Example_Datasets/
-│      ├── MEA_video16.txt
-│      ├── dyad_16_MEA.csv
-│      └── README.md             
-├── LICENSE                        
-├── README.md                     
+│      ├── MEA_video16.txt        # Dyad 16 MEA output
+│      ├── dyad_16_MEA.csv        # Dyad 16 MEA output converted to csv
+│      └── README.md              # Dataset overview
+├── LICENSE                       # MIT License file           
+├── README.md                     # Project overview and instructions    
 └── .gitignore                   
 ```
 
