@@ -194,7 +194,7 @@ We will be calculating
 1) Delay
 2) Embedding Dimension
 
-###**1) Delay**
+### 1) Delay
 
 Delay is a parameter set within CRQA which refer to the time lag between data points used to reconstruct the phase space of a time series. It determines how far apart in time the data points are when assessing their similarity or synchronization.
 
@@ -219,7 +219,7 @@ find_first_minimum <- function(ami_values) {
 }
 ```
 
-###**2) Embedding Dimension**
+### 2) Embedding Dimension
 
 The embedding dimension determines the **number of consecutive data points** used to reconstruct the system’s state space. It captures how many dimensions are needed to unfold the underlying dynamics of the system without overlaps or false trajectories.
 
@@ -246,7 +246,7 @@ embedding_dimension <- embedding_dimension[1]
 
 ## Step 4: Calculate Delay and Embedding Dimension Parameters
 
-###**First, initialize storage for parameters.**
+### First, initialize storage for parameters.
 
 Set up empty vectors to store the computed delay and embedding dimension values for each sampled dyad.
 ```r
@@ -255,7 +255,7 @@ embeddings <- c()
 ```
 
 
-###**Second, iterate over our selected sampled dyads.**
+### Second, iterate over our selected sampled dyads.
 
 Loop through each dyad selected in the `dyads_to_sample` vector to perform the analysis.
 ```r
@@ -267,7 +267,7 @@ for (i in 1:length(dyads_to_sample)) {
 
 Within the loop:
 
-###**Select dyad data**
+### Select dyad data
 
 Extract the data for the current dyad from the `mea_normal` list.
 
@@ -285,12 +285,14 @@ ts_participant1 <- dyad_data$Participant1
 ts_participant2 <- dyad_data$Participant2
 ```
 
-###**Fourth, select middle 60% of time series**
+### Fourth, select middle 60% of time series
 
 <ins>**Purpose:**<ins>
+
 To mitigate memory-related errors during analysis, particularly when working with large time series datasets.
 
 <ins>**Background:**<ins>
+
 Processing extensive time series data (e.g., datasets exceeding 12,000 rows) can lead to memory exhaustion errors in R, especially when using the 'crqa()' function. You may recieve warnings such as:
 
 ```
@@ -301,10 +303,8 @@ Error: vector memory exhausted (limit reached?)
 These errors occur when R attempts to convert large sparse matrices into dense ones, consuming significant memory resources. This is especially pertinent when using packages like `crqa`, which may not efficiently handle very large datasets.
 
 <ins>**Solution:**<ins>
-To address this, focus on the central portion of the time series data:
 
-* **Select the Middle 60%:**
-By analyzing the central 60% of the time series, you reduce the dataset size, thereby decreasing memory usage and avoiding edge effects that can distort analysis.
+To address this, we focus on the central 60% of the time series.
 
 **Example in R:**
 ```r
@@ -320,11 +320,11 @@ get_middle_60_percent <- function(time_series) {
 
 - Reduces the risk of memory exhaustion errors.
 - Enhances computational efficiency.
-- Maintains the integrity of the analysis by focusing on the most stable segment of the data.
+- Maintains the integrity of the analysis by focusing on the most stable segment of the data; therefore, reducing edge effects
 
-#### d. **Determine Delay Using Average Mutual Information (AMI)**
+### Fifth: Determine Delay Using Average Mutual Information (AMI)
 
-Compute the AMI for each participant's time series to identify the optimal delay.
+Compute the AMI for each participant's time series to identify the optimal delay using the functions we created in **Step 3.**
 
 ```r
 cross_ami_p1 <- mutual(ts_participant1s, lag.max = 800)
@@ -339,9 +339,9 @@ delays <- c(delays, cross_chosen_delay)
 * `mutual()` computes the mutual information for a range of lags.
 * `find_first_minimum()` identifies the first local minimum in the mutual information, suggesting an optimal delay.
 
-#### e. **Determine Embedding Dimension Using False Nearest Neighbors (FNN)**
+#### Sixth: Determine Embedding Dimension Using False Nearest Neighbors (FNN)
 
-Apply the FNN method to estimate the appropriate embedding dimension.([RDocumentation][1])
+Apply the FNN method to estimate the appropriate embedding dimension.
 
 ```r
 cross_max_embedding <- 10
@@ -355,9 +355,9 @@ embeddings <- c(embeddings, cross_chosen_embedding)
 ```
 
 * `false.nearest()` calculates the fraction of false nearest neighbors for different embedding dimensions.
-* `find_elbow()` identifies the "elbow point" in the FNN results, indicating the optimal embedding dimension.([R Package Documentation][2])
+* `find_elbow()` identifies the "elbow point" in the FNN results, indicating the optimal embedding dimension
 
-#### f. **Optional: Visualize FNN Results**
+#### Optional: Visualize FNN Results
 
 Plot the FNN results for each participant to visually assess the embedding dimension selection.
 
