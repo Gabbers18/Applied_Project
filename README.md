@@ -254,7 +254,6 @@ delays <- c()
 embeddings <- c()
 ```
 
-
 ### Second, iterate over our selected sampled dyads.
 
 Loop through each dyad selected in the `dyads_to_sample` vector to perform the analysis.
@@ -263,7 +262,6 @@ for (i in 1:length(dyads_to_sample)) {
   # Analysis steps for each dyad
 }
 ```
-
 
 Within the loop:
 
@@ -276,7 +274,7 @@ dyad_data <- mea_normal[[dyads_to_sample[i]]][[1]]
 ```
 
 
-###**Third, extract individual participant time series.**
+### Third, extract individual participant time series.
 
 Retrieve the time series data for Participant 1 and Participant 2.
 
@@ -339,7 +337,7 @@ delays <- c(delays, cross_chosen_delay)
 * `mutual()` computes the mutual information for a range of lags.
 * `find_first_minimum()` identifies the first local minimum in the mutual information, suggesting an optimal delay.
 
-#### Sixth: Determine Embedding Dimension Using False Nearest Neighbors (FNN)
+### Sixth: Determine Embedding Dimension Using FNN
 
 Apply the FNN method to estimate the appropriate embedding dimension.
 
@@ -357,7 +355,7 @@ embeddings <- c(embeddings, cross_chosen_embedding)
 * `false.nearest()` calculates the fraction of false nearest neighbors for different embedding dimensions.
 * `find_elbow()` identifies the "elbow point" in the FNN results, indicating the optimal embedding dimension
 
-#### Optional: Visualize FNN Results
+### Optional: Visualize FNN Results
 
 Plot the FNN results for each participant to visually assess the embedding dimension selection.
 
@@ -365,6 +363,240 @@ Plot the FNN results for each participant to visually assess the embedding dimen
 plot(cross_fnn_p1, type = "b", main = paste("Dyad", dyads_to_sample[i], "- FNN P1"))
 plot(cross_fnn_p2, type = "b", main = paste("Dyad", dyads_to_sample[i], "- FNN P2"))
 ```
+
+### Seventh: Average the Parameters
+
+Average out the calculated delays and embedding dimensions across the five sampled dyads.
+Save these variables as `average_delay` and `average_embedding` to be used later in our CRQA calculations.
+
+```r
+average_delay <- round(mean(delays, na.rm = TRUE))
+average_embedding <- round(mean(embeddings, na.rm = TRUE))
+
+cat("Average Delay: ", average_delay, "\n")
+cat("Average Embedding: ", average_embedding, "\n")
+```
+
+## Step 5: Function for All Dyads
+
+### First: Define the Function and Initialize Storage
+
+Here, we utilize the parameters we have named and calculated previously as inputs.
+- 
+**Example in R:**
+```r
+run_crqa_for_dyads <- function(df_list, cross_rescale_type, average_delay, average_embedding, cross_theiler_window) {
+  crqa_results <- list()
+  # Function continues...
+}
+```
+
+### Second: Loop Through Each Dyad and Prepare Time Series
+
+- Iterate over each dyad in the provided list
+- Extract and preprocess the time series data for both participants
+
+**Example in R:**
+```r
+for (dyad_name in names(df_list)) {
+  if (grepl("Participant1", dyad_name)) {
+    ts_participant1 <- df_list[[dyad_name]]
+    ts_participant2 <- df_list[[gsub("Participant1", "Participant2", dyad_name)]]
+    # Function continues...
+  }
+}
+```
+
+- **Identify Dyad Pairs:** For each entry in `df_list`, check if it corresponds to "Participant1". If so, assume a corresponding "Participant2" exists.
+- **Extract Time Series:** Retrieve the time series data for both participants using the dyad name and its modified version.
+
+
+### Third: Convert Time Series Data into Numeric Vectors
+
+**Example in R:**
+```r
+ts_participant1s <- unlist(ts_participant1)
+ts_participant1s <- as.numeric(ts_participant1s)
+ts_participant2s <- unlist(ts_participant2)
+ts_participant2s <- as.numeric(ts_participant2s)
+```
+
+### Fourth: Trim Time Series Data
+
+Focus on the central portion to mitigate edge effects using our 60% function
+
+```r
+ts_participant1s <- get_middle_60_percent(ts_participant1s)
+ts_participant2s <- get_middle_60_percent(ts_participant2s)
+```
+
+### Fifth: Rescale Time Series
+
+Normalize the time series data based on the specified rescaling method to ensure comparability between participants.
+
+**Example in R:**
+```r
+if (cross_rescale_type == 'mean') {
+  rescaled_p1 <- ts_participant1s / mean(ts_participant1s)
+  rescaled_p2 <- ts_participant2s / mean(ts_participant2s)
+} else if (cross_rescale_type == 'max') {
+  rescaled_p1 <- ts_participant1s / max(ts_participant1s)
+  rescaled_p2 <- ts_participant2s / max(ts_participant2s)
+}
+```
+
+### Sixth: Perform CRQA Analysis
+
+```r
+crqa_analysis <- crqa(ts1 = rescaled_p1,
+                      ts2 = rescaled_p2,
+                      delay = average_delay,
+                      embed = average_embedding,
+                      r = radius,
+                      normalize = 0,
+                      rescale = 0,
+                      mindiagline = 2,
+                      minvertline = 2,
+                      tw = cross_theiler_window,
+                      whiteline = FALSE,
+                      recpt = FALSE)
+```
+
+### Seventh: Extract and Store CRQA Metrics
+
+```r
+crqa_results[[dyad_name]] <- list(
+  RR = crqa_analysis$RR,
+  DET = crqa_analysis$DET,
+  NRLINE = crqa_analysis$NRLINE,
+  maxL = crqa_analysis$maxL,
+  L = crqa_analysis$L,
+  ENTR = crqa_analysis$ENTR,
+  rENTR = crqa_analysis$rENTR,
+  LAM = crqa_analysis$LAM,
+  TT = crqa_analysis$TT
+)
+```
+
+## Step 6: Using the Function
+
+### First: Define the Data Source and Prepare Batches
+
+Here, we process multiple `.txt` files containing dyadic time series data:
+
+```r
+MEA_folder_path <- "your_folder_path"
+```
+
+This retrieves all files ending with `.txt` in the given directory:
+
+```r
+txt_files <- list.files(path = MEA_folder_path2, pattern = "\\.txt$", full.names = TRUE)
+```
+
+This divides the list of files into smaller groups (batches) of 28 files each:
+
+```r
+batch_size <- 28
+batches <- split(txt_files, ceiling(seq_along(txt_files) / batch_size))
+```
+
+Here, we initialize an empty dataframe to store the results:
+
+```r
+all_results <- data.frame(Dyad = character(), stringsAsFactors = FALSE)
+```
+
+### Second, Process Each Batch and Apply the CRQA Function
+
+For each batch of files, the code reads the data, organizes it, and applies the `run_crqa_for_dyads` function.
+
+# Create an empty dataframe to store all results
+```r
+all_results <- data.frame(Dyad = character(), stringsAsFactors = FALSE)
+```
+
+**Loop through each batch:**
+```r
+for (i in seq_along(batches)) {
+  batch_files <- batches[[i]]
+  df_list <- list()
+  
+  # Read and store each file in df_list
+  for (file in batch_files) {
+    df <- read_delim(file, delim = "\t", col_names = FALSE)  # Adjust delimiter if necessary
+    base_name <- tools::file_path_sans_ext(basename(file))
+    df_list[[base_name]] <- df
+  }
+  
+  # Run CRQA function on the batch
+  batch_results <- run_crqa_for_dyads(df_list, cross_rescale_type, average_delay, average_embedding, cross_theiler_window)
+  
+  # Convert results list to a dataframe
+  batch_results_df <- do.call(rbind, lapply(names(batch_results), function(name) {
+    data.frame(Dyad = name, t(batch_results[[name]]))
+  }))
+  
+  # Append batch results to final dataframe
+  all_results <- rbind(all_results, batch_results_df)
+}
+```
+
+### Third, View Results
+
+```r
+print(all_results)
+```
+
+### Fourth, Clean and Export the Final Results
+
+After processing all batches, the results are cleaned and saved for further analysis.
+
+- Clean the Dyad Names
+- Convert Dyad Identifiers to Numeric and Sort
+- Flatten List Columns
+
+```r
+if ("Dyad" %in% names(all_results)) {
+  clean_results <- all_results 
+  clean_results$Dyad <- sub("_Participant[12]_MEA", "", clean_results$Dyad)
+}
+
+clean_results <- clean_results %>%
+  mutate(Dyad = as.numeric(sub("Dyad", "", Dyad))) %>%
+  arrange(Dyad)
+
+# Print final, cleaned results
+print(head(clean_results))
+```
+
+This ensures that the `Dyad` column is numeric and the data is sorted accordingly.
+
+* **Flatten List Columns**:
+
+```r
+  clean_results <- clean_results %>%
+    mutate(across(where(is.list), ~sapply(., function(x) paste(unlist(x), collapse = ", "))))  # Flatten list columns
+```
+
+This step converts any list-type columns into character strings for easier handling.
+
+### Fifth: Export the Cleaned Results to CSV
+
+  ```r
+  write.csv(clean_results, file = "/Users/gabrielleyoung/Desktop/Final_CRQA_Results_Full_test.csv", row.names = FALSE)
+  ```
+
+The final cleaned dataframe is saved as a CSV file for future use.
+
+* **Preview the Results**:
+
+  ```r
+  clean_results %>% head(10)
+  ```
+
+Displays the first 10 rows of the cleaned results to verify the output.
+
 
 ## Final_CRQA_Results.csv  
 this is what you use for the descriptive results analyses
