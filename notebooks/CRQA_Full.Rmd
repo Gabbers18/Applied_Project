@@ -263,10 +263,12 @@ clean_results <- clean_results %>%
 print(head(clean_results))
 ```
 
-```{r write-results-csv}
+```{r flatten-list-columns}
 clean_results <- clean_results %>%
-  mutate(across(where(is.list), ~sapply(., function(x) paste(unlist(x), collapse = ", "))))  # Flatten list columns
+  mutate(across(where(is.list), ~sapply(., function(x) paste(unlist(x), collapse = ", "))))
+```
 
+```{r write-results-csv}
 write.csv(clean_results, file = "your_file_name_and_location.csv", row.names = FALSE)
 ```
 
