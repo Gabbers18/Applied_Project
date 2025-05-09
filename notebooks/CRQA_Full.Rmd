@@ -29,7 +29,7 @@ sampRate = 25, s1Col = 2, s2Col = 1,
 
 # Part 2: Cross Recurrence Quantification Analysis (CRQA) 
 
-# DETERMINE PARAMETERS
+## Step 1: DETERMINE PARAMETERS
 
 ```{r determine-parameters}
 cross_theiler_window = 0
@@ -37,10 +37,14 @@ cross_rescale_type = 'mean'
 radius = .1
 ```
 
+## Step 2: Create a Random Sample
+
 ```{r random-sample}
 set.seed(123)
 dyads_to_sample <- sample(1:length(mea_normal), 5)
 ```
+
+## Step 3: Create Functions for Parameter Calculation
 
 ### Preliminary function for Delay
 ```{r find-first-minimum}
@@ -73,6 +77,8 @@ find_elbow <- function(fnn_values) {
   return(length(fnn_values))  # If no clear elbow is found, return the max embedding
 }
 ```
+
+## Step 4: Calculate Delay and Embedding Dimension Parameters
 
 ```{r determine-parameters}
 # Initialize storage for delay and embedding dimensions
@@ -127,6 +133,8 @@ cat("Average Embedding: ", average_embedding, "\n")
 ```
 
 # CRQA - Full Run Through
+
+## Step 5: Function for All Dyads
 
 ### Our Function
 ```{r function-all-dyads}
@@ -197,13 +205,12 @@ run_crqa_for_dyads <- function(df_list, cross_rescale_type, average_delay, avera
 }
 ```
 
-### Using the Function
-``` {r run-all}
-# Define folder path
-MEA_folder_path2 <- "your_folder_path"
+## Step 6: Using the Function
 
-# List all .txt files
-txt_files <- list.files(path = MEA_folder_path2, pattern = "\\.txt$", full.names = TRUE)
+``` {r run-all}
+MEA_folder_path <- "your_folder_path"
+
+txt_files <- list.files(path = MEA_folder_path, pattern = "\\.txt$", full.names = TRUE)
 
 # Split the files into batches of 28
 batch_size <- 28
@@ -260,7 +267,7 @@ print(head(clean_results))
 clean_results <- clean_results %>%
   mutate(across(where(is.list), ~sapply(., function(x) paste(unlist(x), collapse = ", "))))  # Flatten list columns
 
-write.csv(clean_results, file = "/Users/gabrielleyoung/Desktop/Final_CRQA_Results_Full_test.csv", row.names = FALSE)
+write.csv(clean_results, file = "your_file_name_and_location.csv", row.names = FALSE)
 ```
 
 ### Viewing Results
