@@ -128,17 +128,6 @@ cat("Average Embedding: ", average_embedding, "\n")
 
 # CRQA - Full Run Through
 
-### Dealing with Large Datasets
-```{r function-for-all-data}
-# Function to extract the middle 60% of the time series
-get_middle_60_percent <- function(time_series) {
-  total_length <- length(time_series)
-  start_index <- floor(0.2 * total_length) + 1
-  end_index <- ceiling(0.8 * total_length)
-  return(time_series[start_index:end_index])
-}
-```
-
 ### Our Function
 ```{r function-all-dyads}
 # Define the function to process each dyad and run CRQA
