@@ -4,12 +4,23 @@
 #### By: Gabrielle Young; Advisor: Dr. Nicholas Duran
 
 ## Overview
-This study examines how individuals coordinate movements and language during shared tasks by analyzing real-time multimodal data. Employing Cross-Recurrence Quantification Analysis (CRQA), the research identifies initiator and responder roles through movement patterns. Additionally, Motion Energy Analysis (MEA) techniques are applied to extract motion energies of each participant, aiming to uncover interaction dynamics that may inform training and other applications.
+This study examines how individuals coordinate movements on a shared, goal-oriented task by analyzing real-time multimodal data. Using **Cross-Recurrence Quantification Analysis (CRQA)**, we identify **initiator** and **responder** roles through movement patterns, while **Motion Energy Analysis (MEA)** extracts each participant's overall motion energies. These techniques help uncover interaction patterns that may predict persuasion or shifts in opinion as individuals negotiate and align toward a shared decision.
 
 ## Research Questions
 1) How does movement synchronization affect persuasion?
 2) How does movement specialization (initiator/responder roles) affect persuasion?
 
+## Significance of Research Questions
+
+<ins>**Research Question 1**<ins>
+
+Past research suggests synchronizion of movements, language, gesturing, etc. fosters trust, and rapport. With this   in mind, we ponder whether dyads who synchronize are likely to change there minds similarly when making joint-  decisions.
+
+<ins>**Research Question 2**<ins>
+
+Past research also suggests that individuals who take on initator (leader) roles tend to have more of a persuasive influence on their peers. We believe that dyads where intiator/responder roles emerge may show more asymmetrical changes in responses when making joint-decisions.
+
+Both of these questions link the embodied coordination of interaction to deeper cognitive and/or social outcomes. Specifically, we are looking into how people change their minds or influence one another while working toward a shared decision.
 
 ## Repository Structure
 
@@ -39,6 +50,11 @@ Applied_Project/
 └── .gitignore                   
 ```
 
+## Our Data
+- TxtFiles_cleaned
+- cleaned_qualtrics.csv
+
+### 
 
 ## Libraries
 - plyr
