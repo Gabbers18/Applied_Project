@@ -790,7 +790,7 @@ Represents the average duration of stable states (vertical lines). Longer trappi
 
 # Part 4
 ## Examining Persuasion
-We will be examining underlying patterns of persuasion within the interactions by calculating/examining a few measures of persuasion. We will be using Spearman's Rank Correlation Coefficient as a measure of the strength and direction of the association between two ranked lists. 
+We will be examining underlying patterns of persuasion within the interactions by calculating/examining a few measures of persuasion. We will be using **Spearman's Rank Correlation Coefficient** as a measure of the strength and direction of the association between two ranked lists. 
 
 **The dataset:**
 [cleaned_with_participant_numbers (1) (1).csv.zip](https://github.com/user-attachments/files/17985395/cleaned_with_participant_numbers.1.1.csv.zip)
