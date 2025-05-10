@@ -1,5 +1,5 @@
 # Applied Project (Fall 2023-Spring 2025)
-# Persuasion Through Synchronization: Examining the Impact of Movement on Persuasion in Social Interactions
+# Investigating Dyadic Persuasion through Behavioral Synchrony: A CRQA Approach
 
 #### By: Gabrielle Young; Advisor: Dr. Nicholas Duran
 
