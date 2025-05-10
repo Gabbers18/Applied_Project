@@ -326,6 +326,8 @@ ts_participant2 <- dyad_data$Participant2
 
 ### Fourth, select middle 60% of time series
 
+### _Troubleshooting Memory Issue:_
+  
 <ins>**Purpose:**<ins>
 
 To mitigate memory-related errors during analysis, particularly when working with large time series datasets.
@@ -621,7 +623,7 @@ print(head(clean_results))
 
 This ensures that the `Dyad` column is numeric and the data is sorted accordingly.
 
-* **Flatten List Columns**:
+- **Flatten List Columns**:
 
 ```r
 clean_results <- clean_results %>%
@@ -636,9 +638,7 @@ This step converts any list-type columns into character strings for easier handl
 write.csv(clean_results, file = "your_desired_file_location.csv", row.names = FALSE)
 ```
 
-The final cleaned dataframe is saved as a CSV file for future use.
-
-* **Preview the Results**:
+- **Preview the Results**:
 
 ```r
 clean_results %>% head(10)
@@ -699,12 +699,120 @@ The percentage of recurrent points forming vertical lines, capturing intermitten
 
 The average length of vertical lines, representing how long interactions remain in a stable state before shifting. Longer times indicate sustained coordination.
 
-## Final_CRQA_Results.csv  
-this is what you use for the descriptive results analyses
-# Part 3
-### Examining Persuasion
+# Part 3 - Optional
+## Descriptive Statistics
+
+I conducted a short analysis to gather the descriptive statstics of my results.
+
+## Libraries
+- dplyr
+- ggplot2
+- plyr
+- tidyr
+
+## Step 1: Open Results csv file
+```r
+results <- read.csv("your_path_to_CRQA_Results")
+```
+  
+## Step 2: Generate Descriptives
+- Mean
+- Sd
+- Min
+- Max
+
+**Example R code:**
+```r
+descriptives_results <- results %>%
+  summarise(
+    mean_RR     = mean(RR, na.rm = TRUE),
+    sd_RR       = sd(RR, na.rm = TRUE),
+    min_RR      = min(RR, na.rm = TRUE),
+    max_RR      = max(RR, na.rm = TRUE),
+    
+    mean_DET    = mean(DET, na.rm = TRUE),
+    sd_DET      = sd(DET, na.rm = TRUE),
+    min_DET     = min(DET, na.rm = TRUE),
+    max_DET     = max(DET, na.rm = TRUE),
+# repeat for each result output
+```
+
+## Example Output
+```
+  stat        mean         sd       min        max
+  <chr>      <dbl>      <dbl>     <dbl>      <dbl>
+1 RR          1.65      3.08     0.0230      18.1 
+2 DET        80.1      12.6     37.3         95.8 
+3 maxL       77.8      68.0      6          292   
+4 NRLINE 308791.   501059.    3415      2415466   
+5 L           4.73      1.40     2.28         8.48
+6 ENTR        1.98      0.429    0.671        2.76
+```
+
+## Interpretting Results
+
+- **Recurrence Rate (RR)**
+Low values indicate little to no synchrony; high values indicate strong synchrony. For example, if a dyad has an RR of 18 (the max RR in our data), it likely reflects a highly coordinated interaction.
+
+- **Determinism (DET)**
+Higher DET suggests more patterned coordination. For instance, a maximum DET value of 95.81 in our dataset indicates a dyad with highly synchronized, structured behavior—such as mimicking body movements or moving with similar rhythms (e.g., dancing).
+
+- **Maximum Length of a Diagonal Line (maxL)**
+A high maxL value implies a long, uninterrupted period of similarity or synchrony between participants. For example, a maxL of 292 indicates a lengthy stretch of coordinated behavior.
+
+- **Number of Lines (NRLINE)**
+This represents the total number of diagonal lines in the CRQA plot. A higher NRLINE, such as our dataset’s maximum of 2,415,466, reflects many repeated behaviors throughout the interaction.
+
+- **Average Line Length (L)**
+Higher average line length suggests more predictable and stable behavior. A maximum value of 8.48 indicates consistent coordination between dyad members.
+
+- **Entropy of Line Lengths (ENTR)**
+A higher ENTR value (e.g., max = 2.76) reflects more diverse interaction patterns, pointing to complex dyadic dynamics. Lower values imply more regular, predictable behavior.
+
+- **Relative Entropy (rENTR)**
+High rENTR values (closer to 1) indicate more complex and variable movement patterns. Lower values suggest more uniformity and predictability.
+
+- **Laminarity (LAM)**
+Measures the proportion of recurrence points forming vertical lines—indicative of behavioral stasis. A high LAM value suggests prolonged stable states (e.g., shared stillness or sustained mutual attention).
+
+- **Trapping Time (TT)**
+Represents the average duration of stable states (vertical lines). Longer trapping times reflect more sustained coordination. For instance, a TT of 5.14 means dyads stayed in similar states for relatively brief intervals, indicating short-lived stability during interaction.
+
+
+# Part 4
+## Examining Persuasion
 We will be examining underlying patterns of persuasion within the interactions by calculating/examining a few measures of persuasion. We will be using Spearman's Rank Correlation Coefficient as a measure of the strength and direction of the association between two ranked lists. 
 
 **The dataset:**
 [cleaned_with_participant_numbers (1) (1).csv.zip](https://github.com/user-attachments/files/17985395/cleaned_with_participant_numbers.1.1.csv.zip)
+
+
+## Troubleshooting
+
+### 1. XQuartz Installation Required for macOS Compatibility
+
+To utilize the `crqa` package on macOS, I needed to install **XQuartz**, as macOS no longer includes X11 by default. This is essential for packages that rely on X11 graphics, such as `crqa` and others like `rgl`.
+
+- **Version Used**: XQuartz 2.8.5 (xorg-server 21.1.6)
+- **Note**: After installation, it's advisable to log out and log back in to ensure XQuartz is properly integrated.
+
+### 2. Memory Management Challenges
+
+The `crqa` analyses were memory-intensive, leading to occasional system slowdowns and unresponsiveness. To mitigate these issues:
+
+- **Regularly Saved Progress**: Frequent saving of R data objects (`.RData` files) allowed for easier recovery and continuation of work.
+- **Processed Data in Batches**: Dividing large datasets into smaller subsets helped in managing memory usage effectively.
+- **Utilized Middle 60% Function**: I devised a function to select the middle of my timeseries data to avoid frequent memory exhastion.
+
+
+# References
+
+Kleinbub, J. R., & Ramseyer, F. (n.d.). Motion Energy Analysis (MEA). Retrieved May 9, 2025, from https://psync.ch/mea/
+
+Kleinbub, J. R. (n.d.). rMEA: Motion Energy Analysis for R (Version 1.2.2) [R package]. GitHub. https://github.com/kleinbub/rMEA
+
+Coco, M. I., & Dale, R. (n.d.). crqa: Cross Recurrence Quantification Analysis for R (Version 2.0.5) [R package]. GitHub. https://github.com/morenococo/crqa
+
+XQuartz Project. (n.d.). XQuartz: X Window System for macOS (Version 2.8.5; xorg-server 21.1.6) [Computer software]. Retrieved May 9, 2025, from https://www.xquartz.org
+
 
