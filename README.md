@@ -659,7 +659,7 @@ clean_results %>% head(10)
 10    27 0.8902013 78.03127  157958   31 4.114695 1.867929 0.5491976 87.39552 6.562338
 ```
 
-## Output Results File
+## Output File
 - clean_results.csv
 
 ## Results Interpretation
@@ -753,11 +753,11 @@ descriptives_results <- results %>%
 
 1) <ins>RR: Recurrence Rate<ins>
 
-- Low values indicate little to no synchrony; high values indicate strong synchrony. For example, if a dyad has an RR of 18 (the max RR in our data), it likely reflects a highly coordinated interaction.
+Low values indicate little to no synchrony; high values indicate strong synchrony. For example, if a dyad has an RR of 18 (the max RR in our data), it likely reflects a highly coordinated interaction.
 
 2) <ins>DET: Determinism<ins>
 
-- Higher DET suggests more patterned coordination. For instance, a maximum DET value of 95.81 in our dataset indicates a dyad with highly synchronized, structured behavior—such as mimicking body movements or moving with similar rhythms (e.g., dancing).
+Higher DET suggests more patterned coordination. For instance, a maximum DET value of 95.81 in our dataset indicates a dyad with highly synchronized, structured behavior—such as mimicking body movements or moving with similar rhythms (e.g., dancing).
 
 3) <ins>NRLINE: Number of Diagonal Lines<ins>
 
