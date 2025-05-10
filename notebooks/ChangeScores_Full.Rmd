@@ -5,7 +5,7 @@ date: "2025-05-06"
 ---
 
 ```{r open-csv}
-df_cleaned <- read.csv("/Users/gabrielleyoung/Desktop/cleaned_qualtrics.csv")
+df_cleaned <- read.csv("your_path_to_cleaned_qualtrics.csv")
 ```
 
 ```{r change-score}
