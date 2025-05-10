@@ -53,7 +53,7 @@ df_change_scores <- spearman_data_large %>%
 ```
 
 ```{r check_result}
-print(df_change_scores)
+head(df_change_scores)
 ```
 
 ```{r write-csv}
