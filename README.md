@@ -59,10 +59,31 @@ Applied_Project/
 ### Data Descriptions
 
 **TxtFiles_cleaned**
-- 
+- Source:
+  - Originally 60 video files from dyads completing a goal-oriented "Survival" Task
+- Format:
+  - 52 .txt files identified by Dyad #
+- Preprocessing:
+  - Video data converted using MEA
+  - Files were excluded if they showed:
+    - Task interference (e.g., experimenter interruptions, technical malfunctions)
+    - Data corruption (e.g., missing or unreadable video frames)
+    - Incomplete sessions (e.g., participants not finishing the task).
+  - Final dataset includes 52 dyads derived from 52 corresponding video files.
 
-**cleaned_qualtrics.csv**
+cleaned_qualtrics.csv
 
+- Source:
+  -Survey responses from 120 main study participants and 20 pilot participants.
+- Format:
+  - .csv file with 140 rows, each representing one participant.
+  - Participants are identified by dyad_number and participant_number.
+- Preprocessing:
+  - All data were de-identified to protect participant confidentiality.
+  - Rows with missing data (NAs) were removed.
+  - Column names were standardized and renamed for clarity.
+
+Variables were reordered based on relevance to the research questions.
 ## Libraries
 - plyr
 - crqa
