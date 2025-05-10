@@ -659,12 +659,49 @@ clean_results %>% head(10)
 10    27 0.8902013 78.03127  157958   31 4.114695 1.867929 0.5491976 87.39552 6.562338
 ```
 
-Displays the first 10 rows of the cleaned results to verify the output.
+## Output Results File
+- clean_results.csv
 
+## Results Interpretation
+1) <ins>RR: Recurrence Rate<ins>
+
+The percentage of time points where both participants exhibit the same or similar states. Higher values indicate stronger coordination.
+
+2) <ins>DET: Determinism<ins>
+
+The proportion of recurrent points that form diagonal lines, reflecting structured and predictable behavior in the interaction. Higher values suggest more patterned coordination.
+
+3) <ins>NRLINE: Number of Diagonal Lines<ins>
+
+Counts the number of diagonal line structures in the recurrence plot, indicating sequences of shared states.
+
+4) <ins>maxL: Maximum Line Length<ins>
+
+The longest diagonal line in the recurrence plot, representing the longest uninterrupted period of synchronization.
+
+ 5) <ins>L: Average Line Length<ins>
+
+The mean length of diagonal lines, indicating the average duration of coordinated sequences. Higher values suggest greater interaction stability.
+
+ 6) <ins>ENTR: Entropy of Line Lengths<ins>
+
+Measures the variability in diagonal line lengths, reflecting the complexity or predictability of coordination patterns.
+
+7) <ins>rENTR: Relative Entropy<ins>
+
+Normalized entropy value, comparing the structure of the recurrence to a baseline or expected distribution.
+
+8) <ins>LAM: Laminarity<ins>
+
+The percentage of recurrent points forming vertical lines, capturing intermittent coordination or pauses in movement. Higher values suggest periods of engagement followed by disengagement.
+
+ 9) <ins>TT: Trapping Time<ins>
+
+The average length of vertical lines, representing how long interactions remain in a stable state before shifting. Longer times indicate sustained coordination.
 
 ## Final_CRQA_Results.csv  
 this is what you use for the descriptive results analyses
-## Section 3
+# Part 3
 ### Examining Persuasion
 We will be examining underlying patterns of persuasion within the interactions by calculating/examining a few measures of persuasion. We will be using Spearman's Rank Correlation Coefficient as a measure of the strength and direction of the association between two ranked lists. 
 
