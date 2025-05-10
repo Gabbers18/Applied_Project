@@ -837,8 +837,55 @@ Source:
 - individual ranking variables (15 varaibles beginningw with `individual_`)
 - group ranking variables (15 varaibles beginningw with `group_`)
 
+## Libraries
+- dplyr
+- ggplot2
+- utils
+- tidyr
+  
+## Step 1: Open Cleaned Qualtrics file
 
-## Check Results
+```r
+df_cleaned <- read.csv("your_path_to_cleaned_qualtrics.csv")
+```
+
+## Step 2: Calculate Individual Change Scores
+
+- using the 'cor' fucntion, we compare survey responses at an individual level to the joint-decison group responses
+- see full code chunk in [ChangeScores_Full.Rmd file](https://github.com/Gabbers18/Applied_Project/blob/main/notebooks/ChangeScores_Full.Rmd#L55)
+
+**Example R Code:**
+```r
+df_change_scores <- df_cleaned %>%
+  rowwise() %>% 
+  mutate(
+    spearman_corr = cor(
+      c(individual_jack_knife, individual_flashlight,  etc.),
+      c(group_jack_knife, group_flashlight, group_area_map, group_raincoat, etc.),
+      method = "spearman", use = "complete.obs"
+    )
+  )
+```
+## Step 3: Clean Results
+- pivot data longer
+- remove incomplete survey data
+
+## Step 4: Calculate Dyad Change Score
+
+- find the difference between participant individual change scores
+- `group_by()` the `dyad_number`
+
+**Example R Code:**
+```r
+df_change_scores <- spearman_data_large %>% 
+  group_by(dyad_number) %>%
+  mutate(
+    dyad_level_change_score = abs(individual_level_change_score[participant_number == 1] - individual_level_change_score[participant_number == 2])
+  ) %>%
+  ungroup()
+```
+
+## Step 5: Check Results
 ```r
 head(df_change_scores)
 ```
@@ -853,6 +900,27 @@ head(df_change_scores)
 4           2                  1                      0.836                  0.418
 5           4                  2                      0.539                  0.204
 6           4                  1                      0.336                  0.204
+```
+## Step 6: Save Results as a csv
+
+**Example R Code:**
+```r
+write.csv(df_change_scores, file = "your_desired_path_location.csv", row.names = FALSE)
+```
+
+## Optional Step 7 - Visualize Change Scores
+
+- remove duplicate entries using `filter` or `unique` functions
+  
+**Example R Code:**
+```r
+ggplot(df_change_scores2, aes(x = dyad_number, y = dyad_level_change_score)) +
+  geom_bar(stat = "identity") +
+  labs(title = "Dyad Level Change Score by Dyad Number",
+       x = "Dyad Number",
+       y = "Dyad Level Change Score") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))
 ```
 
 ## Example Graph - Dyad Level Change Scores
