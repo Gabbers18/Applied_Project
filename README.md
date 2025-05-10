@@ -106,10 +106,10 @@ _More information on the MEA software can be found at [this link.](https://psync
 
 _More information on the rMEA package can be found at [this link.](https://github.com/kleinbub/rMEA)._
 
-### Visualizing the frame-by-frame differences in interactions - Example Dyad 40
+## Visualizing the frame-by-frame differences in interactions - Example Dyad 40
 ![gif](https://github.com/user-attachments/assets/882d8317-5555-4003-a48d-c325caadc337)
 
-### Example R code
+## Example R code
 For .txt files - direct output of MEA
 
 ```r
@@ -119,7 +119,7 @@ sampRate = 25, s1Col = 2, s2Col = 1,
                      idOrder = c("id","session"), idSep="_")
 ```
 
-### Code explaination
+## Code explaination
 This section utilizes **only** the 'rMEA' library. 
 
 Item descriptions:
@@ -128,13 +128,13 @@ Item descriptions:
 - s1Name = corresponding name of column 1
 - s2Name = corresponding name of column 2
 
-### Important notes
+## Important notes
 - The path for this code **must** be a folder, not individual files
 - This code utilizes a folder containing **only** .txt files; see [Example_MEA.Rmd](https://github.com/Gabbers18/Applied_Project/blob/main/Examples/Example_MEA.Rmd) for how to run other file types
 - This package is useful for naming columns and parsing columns appropriately
 - Useful for visualing the time series data; see [Example_MEA.Rmd](https://github.com/Gabbers18/Applied_Project/blob/main/Examples/Example_MEA.Rmd)  diagnostic plots
 
-### Structure of mea_normal Output list
+## Structure of mea_normal Output list
 ```
 mea_normal/
 ├── all_MEA_1000/                          # each individual file (ex: dyad 1000 here)
@@ -173,14 +173,14 @@ _More information on this package can be found at [this link.](https://github.co
 - radius
 - rescale type
 
-## Step 1: Determine Inital Parameter(s)
+# Step 1: Determine Inital Parameter(s)
 
 I chose to intially set the following variables:
 1) theiler window
 2) rescale type
 3) radius
 
-**1) Theiler Window**
+## 1) Theiler Window
 - Theiler window excludes near-diagonal points from being counted as recurrences
 - Set to 0
 - 0 means no exclusion of points
@@ -190,7 +190,7 @@ I chose to intially set the following variables:
 ```r
 cross_theiler_window = 0
 ```
-**2) Rescale type**
+## 2) Rescale type
 
 - Rescale type is set a method of **normalizing** the time series before computing distances
 - Initlaly set rescale type to 'mean'
@@ -199,7 +199,7 @@ cross_theiler_window = 0
 ```r
 cross_rescale_type = 'mean'
 ```
-**3) Radius**
+## 3) Radius
 
 In this case I chose a radius of **0.1**. This small value **increases** the sensitivity to recurrent points in this data. This stricter criteria means our analysis will be more sensitive to smaller differences in the data.
 
@@ -209,18 +209,16 @@ In this case I chose a radius of **0.1**. This small value **increases** the sen
 radius = .1
 ```
 
-## Step 2: Create a Random Sample
+# Step 2: Create a Random Sample
 
-### First
-- Set a seed for reproducibility.
+## First, set a seed for reproducibility.
 
 **Example in R:**
 ```r
 set.seed(123)
 ```
 
-### Second
-- Take a random sample of 5 dyads.
+## Second, take a random sample of 5 dyads.
 
 Sampling Justification:
 - Our data contains files between 12,000-21,000 rows, making full-scale computations resource-intensive
@@ -231,25 +229,25 @@ Sampling Justification:
 dyads_to_sample <- sample(1:length(mea_normal), 5)
 ```
 
-## Step 3: Create Functions for Parameter Calculation
+# Step 3: Create Functions for Parameter Calculation
 
 We will be calculating
 1) Delay
 2) Embedding Dimension
 
-### 1) Delay
+## 1) Delay
 
 Delay is a parameter set within CRQA which refer to the time lag between data points used to reconstruct the phase space of a time series. It determines how far apart in time the data points are when assessing their similarity or synchronization.
 
 Delay is a parameter used in CRQA that refers to the **time lag between data points** used to reconstruct the phase space of a time series. It determines how far apart in time the data points are when assessing similarity or synchronization.
 
-### How Delay is Determined:
+## How Delay is Determined:
 
 * Calculated using **Average Mutual Information (AMI)**.
 * AMI measures the amount of shared information between the original time series and its delayed version.
 * The **first local minimum** in the AMI curve indicates the optimal delay—this is the point where each successive data point provides the most new information.
 
-**Function to calcualte AMI:**
+## Function to calcualte AMI:
 
 ```{r find-first-minimum}
 find_first_minimum <- function(ami_values) {
@@ -262,17 +260,17 @@ find_first_minimum <- function(ami_values) {
 }
 ```
 
-### 2) Embedding Dimension
+## 2) Embedding Dimension
 
 Determines the **number of consecutive data points** used to reconstruct the system’s state space. It captures how many dimensions are needed to unfold the underlying dynamics of the system without overlaps or false trajectories.
 
-### How Embedding Dimension is Determined:
+## How Embedding Dimension is Determined:
 
 * Typically selected using the **False Nearest Neighbors (FNN)** algorithm.
 * FNN identifies the minimum number of dimensions where false neighbors (points that appear close due to projection in low dimensions) are minimized.
 * The optimal embedding dimension is where the **percentage of false neighbors drops to near zero or levels off**, meaning the system’s dynamics are well represented.
 
-**Function to caculate FNN**
+## Function to caculate FNN
 
 ```r
 # Calculate FNN with previously selected delay
@@ -287,9 +285,9 @@ embedding_dimension <- which(diff(sign(diff(fraction_values))) > 0) + 1
 embedding_dimension <- embedding_dimension[1]
 ```
 
-## Step 4: Calculate Delay and Embedding Dimension Parameters
+# Step 4: Calculate Delay and Embedding Dimension Parameters
 
-### First, initialize storage for parameters.
+## First, initialize storage for parameters.
 
 - Set up empty vectors to store the computed delay and embedding dimension values for each sampled dyad.
 ```r
@@ -297,7 +295,7 @@ delays <- c()
 embeddings <- c()
 ```
 
-### Second, iterate over our selected sampled dyads.
+## Second, iterate over our selected sampled dyads.
 
 - Loop through each dyad selected in the `dyads_to_sample` vector to perform the analysis.
 ```r
@@ -317,7 +315,7 @@ dyad_data <- mea_normal[[dyads_to_sample[i]]][[1]]
 ```
 
 
-### Third, extract individual participant time series.
+## Third, extract individual participant time series.
 
 - Retrieve the time series data for Participant 1 and Participant 2.
 
@@ -326,9 +324,9 @@ ts_participant1 <- dyad_data$Participant1
 ts_participant2 <- dyad_data$Participant2
 ```
 
-### Fourth, select middle 60% of time series
+## Fourth, select middle 60% of time series
 
-### _Troubleshooting Memory Issue:_
+## _Troubleshooting Memory Issue:_
   
 <ins>**Purpose:**<ins>
 
@@ -365,7 +363,7 @@ get_middle_60_percent <- function(time_series) {
 - Enhances computational efficiency.
 - Maintains the integrity of the analysis by focusing on the most stable segment of the data; therefore, reducing edge effects
 
-### Fifth: Determine Delay Using Average Mutual Information (AMI)
+## Fifth: Determine Delay Using Average Mutual Information (AMI)
 
 - Compute the AMI for each participant's time series to identify the optimal delay using the functions we created in **Step 3.**
 
@@ -386,7 +384,7 @@ delays <- c(delays, cross_chosen_delay)
 <img width="459" alt="AMI_plot_2" src="https://github.com/user-attachments/assets/5e8efa03-6c62-49a9-b292-35ca794eba0e" />
 <img width="459" alt="AMI_plot_1" src="https://github.com/user-attachments/assets/aaa87257-b323-4671-a60b-2eb130ea3892" />
 
-### Sixth: Determine Embedding Dimension Using FNN
+## Sixth: Determine Embedding Dimension Using FNN
 
 - Apply the FNN method to estimate the appropriate embedding dimension.
 
@@ -404,7 +402,7 @@ embeddings <- c(embeddings, cross_chosen_embedding)
 * `false.nearest()` calculates the fraction of false nearest neighbors for different embedding dimensions.
 * `find_elbow()` identifies the "elbow point" in the FNN results, indicating the optimal embedding dimension
 
-### Optional: Visualize FNN Results
+## Optional: Visualize FNN Results
 
 - Plot the FNN results for each participant to visually assess the embedding dimension selection.
 
@@ -417,7 +415,7 @@ plot(cross_fnn_p2, type = "b", main = paste("Dyad", dyads_to_sample[i], "- FNN P
 <img width="469" alt="FNN_plot_1" src="https://github.com/user-attachments/assets/c186fb6c-1f2a-4093-b36a-49a12204e5e8" />
 <img width="461" alt="FNN_plot_2" src="https://github.com/user-attachments/assets/4fd8c41f-6ebe-4747-86ef-a84a93455805" />
 
-### Seventh: Average the Parameters
+## Seventh: Average the Parameters
 
 - Average out the calculated delays and embedding dimensions across the five sampled dyads.
 - Save these variables as `average_delay` and `average_embedding` to be used later in our CRQA calculations.
@@ -430,9 +428,9 @@ cat("Average Delay: ", average_delay, "\n")
 cat("Average Embedding: ", average_embedding, "\n")
 ```
 
-## Step 5: Function for All Dyads
+# Step 5: Function for All Dyads
 
-### First: Define the Function and Initialize Storage
+## First: Define the Function and Initialize Storage
 
 - Here, we utilize the parameters we have named and calculated previously as inputs.
 
@@ -444,7 +442,7 @@ run_crqa_for_dyads <- function(df_list, cross_rescale_type, average_delay, avera
 }
 ```
 
-### Second: Loop Through Each Dyad and Prepare Time Series
+## Second: Loop Through Each Dyad and Prepare Time Series
 
 - Iterate over each dyad in the provided list
 - Extract and preprocess the time series data for both participants
@@ -464,7 +462,7 @@ for (dyad_name in names(df_list)) {
 - **Extract Time Series:** Retrieve the time series data for both participants using the dyad name and its modified version.
 
 
-### Third: Convert Time Series Data into Numeric Vectors
+## Third: Convert Time Series Data into Numeric Vectors
 
 **Example in R:**
 ```r
@@ -474,7 +472,7 @@ ts_participant2s <- unlist(ts_participant2)
 ts_participant2s <- as.numeric(ts_participant2s)
 ```
 
-### Fourth: Trim Time Series Data
+## Fourth: Trim Time Series Data
 
 - Focus on the central portion to mitigate edge effects using our 60% function
 
@@ -483,7 +481,7 @@ ts_participant1s <- get_middle_60_percent(ts_participant1s)
 ts_participant2s <- get_middle_60_percent(ts_participant2s)
 ```
 
-### Fifth: Rescale Time Series
+## Fifth: Rescale Time Series
 
 - Normalize the time series data based on the specified rescaling method to ensure comparability between participants.
 
@@ -498,7 +496,7 @@ if (cross_rescale_type == 'mean') {
 }
 ```
 
-### Sixth: Perform CRQA Analysis
+## Sixth: Perform CRQA Analysis
 
 ```r
 crqa_analysis <- crqa(ts1 = rescaled_p1,
@@ -515,7 +513,7 @@ crqa_analysis <- crqa(ts1 = rescaled_p1,
                       recpt = FALSE)
 ```
 
-### Seventh: Extract and Store CRQA Metrics
+## Seventh: Extract and Store CRQA Metrics
 
 ```r
 crqa_results[[dyad_name]] <- list(
@@ -531,9 +529,9 @@ crqa_results[[dyad_name]] <- list(
 )
 ```
 
-## Step 6: Using the Function
+# Step 6: Using the Function
 
-### First: Define the Data Source and Prepare Batches
+## First: Define the Data Source and Prepare Batches
 
 - Here, we process multiple `.txt` files containing dyadic time series data:
 
@@ -560,16 +558,16 @@ batches <- split(txt_files, ceiling(seq_along(txt_files) / batch_size))
 all_results <- data.frame(Dyad = character(), stringsAsFactors = FALSE)
 ```
 
-### Second, Process Each Batch and Apply the CRQA Function
+## Second, Process Each Batch and Apply the CRQA Function
 
 - For each batch of files, the code reads the data, organizes it, and applies the `run_crqa_for_dyads` function.
 
-### Create an empty dataframe to store all results
+## Create an empty dataframe to store all results
 ```r
 all_results <- data.frame(Dyad = character(), stringsAsFactors = FALSE)
 ```
 
-**Loop through each batch:**
+### Loop through each batch:
 ```r
 for (i in seq_along(batches)) {
   batch_files <- batches[[i]]
@@ -595,13 +593,13 @@ for (i in seq_along(batches)) {
 }
 ```
 
-### Third, View Results
+## Third, View Results
 
 ```r
 print(all_results)
 ```
 
-### Fourth, Clean and Export the Final Results
+## Fourth, Clean and Export the Final Results
 
 After processing all batches, the results are cleaned and saved for further analysis:
 
@@ -634,7 +632,7 @@ clean_results <- clean_results %>%
 
 This step converts any list-type columns into character strings for easier handling.
 
-### Fifth: Export the Cleaned Results to CSV
+## Fifth: Save Results as a csv
 
 ```r
 write.csv(clean_results, file = "your_desired_file_location.csv", row.names = FALSE)
