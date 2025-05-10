@@ -71,8 +71,7 @@ Applied_Project/
     - Incomplete sessions (e.g., participants not finishing the task).
   - Final dataset includes 52 dyads derived from 52 corresponding video files.
 
-cleaned_qualtrics.csv
-
+**cleaned_qualtrics.csv**
 - Source:
   -Survey responses from 120 main study participants and 20 pilot participants.
 - Format:
@@ -82,8 +81,8 @@ cleaned_qualtrics.csv
   - All data were de-identified to protect participant confidentiality.
   - Rows with missing data (NAs) were removed.
   - Column names were standardized and renamed for clarity.
+  - Variables were reordered based on relevance to the research questions.
 
-Variables were reordered based on relevance to the research questions.
 ## Libraries
 - plyr
 - crqa
