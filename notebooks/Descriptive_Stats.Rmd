@@ -19,31 +19,14 @@ results <- read.csv("your_path_to_CRQA_Results")
 
 # Normalize Results
 ```{r normalize}
-results_scaled <- results %>%
+results <- results %>%
   mutate(across(c(RR, DET, maxL, NRLINE, L, ENTR, rENTR, LAM, TT),
                 ~ scale(.) %>% as.numeric()))
-
-results_scaled <- results_scaled %>%
-  mutate(
-    RR     = (RR     - min(RR,     na.rm = TRUE)) / (max(RR,     na.rm = TRUE) - min(RR,     na.rm = TRUE)),
-    DET    = (DET    - min(DET,    na.rm = TRUE)) / (max(DET,    na.rm = TRUE) - min(DET,    na.rm = TRUE)),
-    rENTR  = (rENTR  - min(rENTR,  na.rm = TRUE)) / (max(rENTR,  na.rm = TRUE) - min(rENTR,  na.rm = TRUE)),
-    LAM    = (LAM    - min(LAM,    na.rm = TRUE)) / (max(LAM,    na.rm = TRUE) - min(LAM,    na.rm = TRUE))
-  )
-
-# fix this scale for the unbounded metrics
-results_scaled2 <- results_scaled %>%
-  mutate( maxL   = (maxL   - min(maxL,   na.rm = TRUE)) / (max(maxL,   na.rm = TRUE) - min(maxL,   na.rm = TRUE)),
-    NRLINE = (NRLINE - min(NRLINE, na.rm = TRUE)) / (max(NRLINE, na.rm = TRUE) - min(NRLINE, na.rm = TRUE)),
-    L      = (L      - min(L,      na.rm = TRUE)) / (max(L,      na.rm = TRUE) - min(L,      na.rm = TRUE)),
-    ENTR   = (ENTR   - min(ENTR,   na.rm = TRUE)) / (max(ENTR,   na.rm = TRUE) - min(ENTR,   na.rm = TRUE)),
-    TT     = (TT     - min(TT,     na.rm = TRUE)) / (max(TT,     na.rm = TRUE) - min(TT,     na.rm = TRUE))
-  )
 ```
 
 # Generate Descriptives
 ```{r descriptives}
-descriptives_results <- results_scaled %>%
+descriptives_results <- results %>%
   summarise(
     mean_RR     = mean(RR, na.rm = TRUE),
     sd_RR       = sd(RR, na.rm = TRUE),
