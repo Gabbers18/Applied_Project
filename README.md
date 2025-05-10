@@ -6,6 +6,8 @@
 ## Overview
 This study examines how individuals coordinate movements on a shared, goal-oriented task by analyzing real-time multimodal data. Using **Cross-Recurrence Quantification Analysis (CRQA)**, we identify **initiator** and **responder** roles through movement patterns, while **Motion Energy Analysis (MEA)** extracts each participant's overall motion energies. These techniques help uncover interaction patterns that may predict persuasion or shifts in opinion as individuals negotiate and align toward a shared decision.
 
+_View the link to the presentation [here.](https://docs.google.com/presentation/d/1EzJJVp6K7kZwB51ulxABSgz0aShCgJfpRR7RleH1l2I/edit?usp=sharing)_
+
 ## Research Questions
 1) How does movement synchronization affect persuasion?
 2) How does movement specialization (initiator/responder roles) affect persuasion?
@@ -54,7 +56,12 @@ Applied_Project/
 - TxtFiles_cleaned
 - cleaned_qualtrics.csv
 
-### 
+### Data Descriptions
+
+**TxtFiles_cleaned**
+- 
+
+**cleaned_qualtrics.csv**
 
 ## Libraries
 - plyr
@@ -589,25 +596,25 @@ This ensures that the `Dyad` column is numeric and the data is sorted accordingl
 * **Flatten List Columns**:
 
 ```r
-  clean_results <- clean_results %>%
-    mutate(across(where(is.list), ~sapply(., function(x) paste(unlist(x), collapse = ", "))))  # Flatten list columns
+clean_results <- clean_results %>%
+  mutate(across(where(is.list), ~sapply(., function(x) paste(unlist(x), collapse = ", "))))  # Flatten list columns
 ```
 
 This step converts any list-type columns into character strings for easier handling.
 
 ### Fifth: Export the Cleaned Results to CSV
 
-  ```r
-  write.csv(clean_results, file = "/Users/gabrielleyoung/Desktop/Final_CRQA_Results_Full_test.csv", row.names = FALSE)
-  ```
+```r
+write.csv(clean_results, file = "/Users/gabrielleyoung/Desktop/Final_CRQA_Results_Full_test.csv", row.names = FALSE)
+```
 
 The final cleaned dataframe is saved as a CSV file for future use.
 
 * **Preview the Results**:
 
-  ```r
-  clean_results %>% head(10)
-  ```
+```r
+clean_results %>% head(10)
+```
 
 Displays the first 10 rows of the cleaned results to verify the output.
 
