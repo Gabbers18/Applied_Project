@@ -5,10 +5,10 @@ date: "2025-05-06"
 ---
 
 ```{r libraries}
-library(dplyr)    
-library(ggplot2) 
-library(tidyr)    
-library(readr)
+library(dplyr)
+library(utils)
+library(ggplot2)
+library(tidyr)
 ```
 
 ```{r open-csv}
