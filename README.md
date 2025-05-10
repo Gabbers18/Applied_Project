@@ -751,31 +751,40 @@ descriptives_results <- results %>%
 
 ## Interpretting Results
 
-- **Recurrence Rate (RR)**
-Low values indicate little to no synchrony; high values indicate strong synchrony. For example, if a dyad has an RR of 18 (the max RR in our data), it likely reflects a highly coordinated interaction.
+1) <ins>RR: Recurrence Rate<ins>
 
-- **Determinism (DET)**
-Higher DET suggests more patterned coordination. For instance, a maximum DET value of 95.81 in our dataset indicates a dyad with highly synchronized, structured behavior—such as mimicking body movements or moving with similar rhythms (e.g., dancing).
+- Low values indicate little to no synchrony; high values indicate strong synchrony. For example, if a dyad has an RR of 18 (the max RR in our data), it likely reflects a highly coordinated interaction.
 
-- **Maximum Length of a Diagonal Line (maxL)**
+2) <ins>DET: Determinism<ins>
+
+- Higher DET suggests more patterned coordination. For instance, a maximum DET value of 95.81 in our dataset indicates a dyad with highly synchronized, structured behavior—such as mimicking body movements or moving with similar rhythms (e.g., dancing).
+
+3) <ins>NRLINE: Number of Diagonal Lines<ins>
+
 A high maxL value implies a long, uninterrupted period of similarity or synchrony between participants. For example, a maxL of 292 indicates a lengthy stretch of coordinated behavior.
 
-- **Number of Lines (NRLINE)**
+4) <ins>maxL: Maximum Line Length<ins>
+
 This represents the total number of diagonal lines in the CRQA plot. A higher NRLINE, such as our dataset’s maximum of 2,415,466, reflects many repeated behaviors throughout the interaction.
 
-- **Average Line Length (L)**
+ 5) <ins>L: Average Line Length<ins>
+ 
 Higher average line length suggests more predictable and stable behavior. A maximum value of 8.48 indicates consistent coordination between dyad members.
 
-- **Entropy of Line Lengths (ENTR)**
+ 6) <ins>ENTR: Entropy of Line Lengths<ins>
+ 
 A higher ENTR value (e.g., max = 2.76) reflects more diverse interaction patterns, pointing to complex dyadic dynamics. Lower values imply more regular, predictable behavior.
 
-- **Relative Entropy (rENTR)**
+7) <ins>rENTR: Relative Entropy<ins>
+
 High rENTR values (closer to 1) indicate more complex and variable movement patterns. Lower values suggest more uniformity and predictability.
 
-- **Laminarity (LAM)**
+8) <ins>LAM: Laminarity<ins>
+
 Measures the proportion of recurrence points forming vertical lines—indicative of behavioral stasis. A high LAM value suggests prolonged stable states (e.g., shared stillness or sustained mutual attention).
 
-- **Trapping Time (TT)**
+ 9) <ins>TT: Trapping Time<ins>
+ 
 Represents the average duration of stable states (vertical lines). Longer trapping times reflect more sustained coordination. For instance, a TT of 5.14 means dyads stayed in similar states for relatively brief intervals, indicating short-lived stability during interaction.
 
 
