@@ -1,5 +1,5 @@
 # Applied Project (Fall 2023-Spring 2025)
-# Persuasion THrough Synchronization: Examining the Impact of Movement on Persuasion in Social Interactions
+# Persuasion Through Synchronization: Examining the Impact of Movement on Persuasion in Social Interactions
 
 #### By: Gabrielle Young; Advisor: Dr. Nicholas Duran
 
@@ -378,6 +378,10 @@ delays <- c(delays, cross_chosen_delay)
 * `mutual()` computes the mutual information for a range of lags.
 * `find_first_minimum()` identifies the first local minimum in the mutual information, suggesting an optimal delay.
 
+## Example Output AMI Plots - Dyad 16
+<img width="459" alt="AMI_plot_2" src="https://github.com/user-attachments/assets/5e8efa03-6c62-49a9-b292-35ca794eba0e" />
+<img width="459" alt="AMI_plot_1" src="https://github.com/user-attachments/assets/aaa87257-b323-4671-a60b-2eb130ea3892" />
+
 ### Sixth: Determine Embedding Dimension Using FNN
 
 - Apply the FNN method to estimate the appropriate embedding dimension.
@@ -408,11 +412,6 @@ plot(cross_fnn_p2, type = "b", main = paste("Dyad", dyads_to_sample[i], "- FNN P
 ## Example Output FNN Plots - Dyad 16
 <img width="469" alt="FNN_plot_1" src="https://github.com/user-attachments/assets/c186fb6c-1f2a-4093-b36a-49a12204e5e8" />
 <img width="461" alt="FNN_plot_2" src="https://github.com/user-attachments/assets/4fd8c41f-6ebe-4747-86ef-a84a93455805" />
-
-## Example Output AMI Plots - Dyad 16
-<img width="459" alt="AMI_plot_2" src="https://github.com/user-attachments/assets/5e8efa03-6c62-49a9-b292-35ca794eba0e" />
-<img width="459" alt="AMI_plot_1" src="https://github.com/user-attachments/assets/aaa87257-b323-4671-a60b-2eb130ea3892" />
-
 
 ### Seventh: Average the Parameters
 
@@ -634,7 +633,7 @@ This step converts any list-type columns into character strings for easier handl
 ### Fifth: Export the Cleaned Results to CSV
 
 ```r
-write.csv(clean_results, file = "/Users/gabrielleyoung/Desktop/Final_CRQA_Results_Full_test.csv", row.names = FALSE)
+write.csv(clean_results, file = "your_desired_file_location.csv", row.names = FALSE)
 ```
 
 The final cleaned dataframe is saved as a CSV file for future use.
@@ -643,6 +642,21 @@ The final cleaned dataframe is saved as a CSV file for future use.
 
 ```r
 clean_results %>% head(10)
+```
+
+## Example Output
+```
+   Dyad        RR      DET  NRLINE maxL        L    ENTR    rENTR      LAM       TT
+1     16 0.2272047 77.37567   49230   34 4.078529 1.871789 0.5503323 87.74042 6.257235
+2     17 8.6873540 84.53008 2415466   39 4.076759 1.931973 0.5311141 90.45594 6.047816
+3     18 0.0290182 47.66987    7579    6 2.280908 0.671311 0.4171090 78.67582 4.670322
+4     19 0.9133168 90.66628  153174   45 6.506907 2.441424 0.6531941 93.93665 8.980728
+5     21 0.6226238 81.39480  157352   61 4.068954 1.847881 0.4513253 88.15268 5.152100
+6     23 0.3523955 68.32132   80156   53 3.794750 1.674242 0.4279735 79.11179 5.262472
+7     24 0.9184221 86.02303  175875   45 4.754610 2.137165 0.5682135 92.42515 8.317758
+8     25 0.0959766 72.02758   24594   24 3.580263 1.670167 0.5326646 79.68409 4.013555
+9     26 1.7909189 86.73970  358559  208 5.001096 2.119385 0.3977918 93.79627 8.589039
+10    27 0.8902013 78.03127  157958   31 4.114695 1.867929 0.5491976 87.39552 6.562338
 ```
 
 Displays the first 10 rows of the cleaned results to verify the output.
