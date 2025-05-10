@@ -184,7 +184,7 @@ if (cross_rescale_type == 'mean'){
 }
 ```
 
-## Useful function for large datasets
+## Troubleshooting - Useful function for large datasets
 
 I utilized this function to extract the middle 60% of the time series; consider using this function or something similar to sample your large datasets.
 
@@ -234,6 +234,19 @@ or, you can use
 print(crqa_analysis)
 ```
 
+## Example Output - Dyad 16
+```
+[1] 0.07651506
+[1] 77.06324
+[1] 16891
+[1] 26
+[1] 3.958735
+[1] 1.818039
+[1] 0.5648055
+[1] 84.86556
+[1] 5.135077
+```
+
 ## Example Visualization
 For this example, I chose to include two methods of visualizing the analysis. The first method utilizes the function 'plotRP()' which is from the 'crqa' library. The second method I used 'ggplot.'
 
@@ -248,6 +261,10 @@ par = list(unit = 2,
 plotRP(crqa_analysis$RP, par)
 ```
 
+## Example Output - Dyad 16
+<img width="452" alt="Screenshot 2025-05-09 at 5 42 21 PM" src="https://github.com/user-attachments/assets/4fed4fd5-2b1d-4e02-8271-2137993e1530" />
+
+
 ### Plotting Method 2
 ```r
 crqa_df = data.frame(points = crqa_analysis$RP@i,
@@ -260,6 +277,10 @@ ggplot(crqa_df,aes(x=points,
   ylab("Participant 2") + xlab("Participant 1") +
   ggtitle("Dyad 16\nCross-recurrence Plot between\nParticipant 1 and Participant 2 Movement in Survivor Task")
 ```
+
+## Example Output - Dyad 16
+<img width="468" alt="Dyad_16" src="https://github.com/user-attachments/assets/70c25704-b8a1-4353-91b5-5023bfde6912" />
+
 
 ## Results interpretation for this example:
 
