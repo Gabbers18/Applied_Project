@@ -36,7 +36,7 @@ Applied_Project/
 │   ├── ChangeScores_Full.Rmd      # Persuasion Score Calculation using cleaned_qualtrics.csv
 │   └── Descriptive_Stats.Rmd      # Descriptive statistics of Final_CRQA_Results.csv  
 ├── results/                       # Output results from analyses
-│   ├── ALLDataChangeScores.csv                  
+│   ├── Change_Scores.csv          # Persuasion Change Scores        
 │   ├── CRQA_Descriptives_Results.csv                 
 │   └── clean_results.csv          # Final CRQA Results
 ├── Examples/                      # Example usage scripts with data
@@ -837,6 +837,12 @@ Source:
 - individual ranking variables (15 varaibles beginningw with `individual_`)
 - group ranking variables (15 varaibles beginningw with `group_`)
 
+
+## Check Results
+```r
+head(df_change_scores)
+```
+
 ## Example Output
 ```
   dyad_number participant_number individual_level_change_…¹ dyad_level_change_sc…²
@@ -854,6 +860,25 @@ Source:
 
 ## Output file
 - [Change_Scores.csv](https://github.com/Gabbers18/Applied_Project/blob/main/Results/Change_Scores.csv)
+
+## Interpretting Results
+### Individual Change Scores
+- A **lower individual change score** suggests greater persuasive influence from their partner.
+- A **higher individual change score** suggests little persuasive influence from their partner.
+- If individual change scores are **the same** for both participants, this might suggest equal persuasive influence.
+
+### Recurrence Rate (RR) and Dyad Change Score
+- **High Dyad-Level Change score (around 1)**
+  - Represents the group being 0% in synchrony with their responses being asymmetrical.
+  - Low Recurrence rate, meaning the participants are out of sync.
+  - One member driving changes without the other engaging or reciprocating.
+    
+- **A Low Dyad-Level Change score (around 0)**
+  - Represents the group being 100% in synchrony with their responses matching perfectly.
+  - High Recurrence Rate, meaning the participants are in sync.
+  - Changes from both sides equal out.
+  - Indicates that the dyad has achieved a high level of alignment, where changes from both sides cancel each other out due to their mirrored timing.
+
 
 ## Troubleshooting
 
