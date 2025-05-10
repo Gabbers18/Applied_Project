@@ -4,6 +4,13 @@ output: pdf_document
 date: "2025-05-06"
 ---
 
+```{libraries}
+library(dplyr)    
+library(ggplot2) 
+library(tidyr)    
+library(readr)
+```
+
 ```{r open-csv}
 df_cleaned <- read.csv("your_path_to_cleaned_qualtrics.csv")
 ```
