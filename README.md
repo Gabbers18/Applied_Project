@@ -211,14 +211,16 @@ radius = .1
 
 ## Step 2: Create a Random Sample
 
-First, we will set a seed for reproducibility.
+### First
+- Set a seed for reproducibility.
 
 **Example in R:**
 ```r
 set.seed(123)
 ```
 
-Second, we will take a random sample of 5 dyads.
+### Second
+- Take a random sample of 5 dyads.
 
 Sampling Justification:
 - Our data contains files between 12,000-21,000 rows, making full-scale computations resource-intensive
