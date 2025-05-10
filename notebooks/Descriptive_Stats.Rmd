@@ -44,7 +44,6 @@ results_scaled2 <- results_scaled %>%
 # Generate Descriptives
 ```{r descriptives}
 descriptives_results <- results_scaled %>%
-  group_by(Dyad) %>%
   summarise(
     mean_RR     = mean(RR, na.rm = TRUE),
     sd_RR       = sd(RR, na.rm = TRUE),
