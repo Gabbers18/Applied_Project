@@ -405,6 +405,13 @@ plot(cross_fnn_p1, type = "b", main = paste("Dyad", dyads_to_sample[i], "- FNN P
 plot(cross_fnn_p2, type = "b", main = paste("Dyad", dyads_to_sample[i], "- FNN P2"))
 ```
 
+## Example Output FNN and AMI Plots - Dyad 16
+<img width="469" alt="FNN_plot_1" src="https://github.com/user-attachments/assets/c186fb6c-1f2a-4093-b36a-49a12204e5e8" />
+<img width="459" alt="AMI_plot_2" src="https://github.com/user-attachments/assets/5e8efa03-6c62-49a9-b292-35ca794eba0e" />
+<img width="459" alt="AMI_plot_1" src="https://github.com/user-attachments/assets/aaa87257-b323-4671-a60b-2eb130ea3892" />
+<img width="461" alt="FNN_plot_2" src="https://github.com/user-attachments/assets/4fd8c41f-6ebe-4747-86ef-a84a93455805" />
+
+
 ### Seventh: Average the Parameters
 
 - Average out the calculated delays and embedding dimensions across the five sampled dyads.
