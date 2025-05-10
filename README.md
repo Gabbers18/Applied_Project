@@ -38,7 +38,7 @@ Applied_Project/
 ├── results/                       # Output results from analyses
 │   ├── ALLDataChangeScores.csv                  
 │   ├── CRQA_Descriptives_Results.csv                 
-│   └── Final_CRQA_Results.csv                  
+│   └── clean_results.csv          # Final CRQA Results
 ├── Examples/                      # Example usage scripts with data
 │   ├── Example_CRQA.Rmd         
 │   ├── Example_MEA.Rmd
@@ -660,7 +660,7 @@ clean_results %>% head(10)
 ```
 
 ## Output File
-- clean_results.csv
+- [clean_results.csv](https://github.com/Gabbers18/Applied_Project/blob/main/Results/clean_results.csv)
 
 ## Results Interpretation
 1) <ins>RR: Recurrence Rate<ins>
@@ -704,6 +704,27 @@ The average length of vertical lines, representing how long interactions remain 
 
 I conducted a short analysis to gather the descriptive statstics of my results.
 
+## The Data
+
+Source:
+ - For this analysis, we will be using our results output file from the CRQA.
+ - [clean_results.csv](https://github.com/Gabbers18/Applied_Project/blob/main/Results/clean_results.csv)
+    
+Format:
+- .csv file
+- 43 rows
+-  Variables:
+    - `Dyad`
+    - `RR`
+    - `DET`
+    - `NRLINE`
+    - `maxL`
+    - `L`
+    - `ENTR`
+    - `rENTR`
+    - `LAM`
+    - `TT`
+
 ## Libraries
 - dplyr
 - ggplot2
@@ -734,9 +755,18 @@ descriptives_results <- results %>%
     sd_DET      = sd(DET, na.rm = TRUE),
     min_DET     = min(DET, na.rm = TRUE),
     max_DET     = max(DET, na.rm = TRUE),
-# repeat for each result output
+# repeat for each metric
+) %>% 
+  pivot_longer(
+    cols = everything(), 
+               names_to = c("metrics", "stat"),
+               names_sep = "_",
+               values_to = "value") %>%
+  pivot_wider(names_from = metrics, values_from = value)
 ```
-
+- Calculated Mean, sd, min, and max for each of our 9 metrics
+- Pivoted the table to make the content easier to digest
+  
 ## Example Output
 ```
   stat        mean         sd       min        max
@@ -748,6 +778,9 @@ descriptives_results <- results %>%
 5 L           4.73      1.40     2.28         8.48
 6 ENTR        1.98      0.429    0.671        2.76
 ```
+
+## Output file
+- [CRQA_Descriptives_Results.csv](https://github.com/Gabbers18/Applied_Project/blob/main/Results/CRQA_Descriptives_Results.csv)
 
 ## Interpretting Results
 
@@ -792,9 +825,35 @@ Represents the average duration of stable states (vertical lines). Longer trappi
 ## Examining Persuasion
 We will be examining underlying patterns of persuasion within the interactions by calculating/examining a few measures of persuasion. We will be using **Spearman's Rank Correlation Coefficient** as a measure of the strength and direction of the association between two ranked lists. 
 
-**The dataset:**
-[cleaned_with_participant_numbers (1) (1).csv.zip](https://github.com/user-attachments/files/17985395/cleaned_with_participant_numbers.1.1.csv.zip)
+## The Data
 
+Source:
+ - For this analysis, we will be using surveyd data
+ - [cleaned_qualtrics.csv](https://github.com/Gabbers18/Applied_Project/blob/main/data/cleaned_qualtrics.csv)
+
+## Variables of Interest
+- `dyad_number`
+- `participant_number`
+- individual ranking variables (15 varaibles beginningw with `individual_`)
+- group ranking variables (15 varaibles beginningw with `group_`)
+
+## Example Output
+```
+  dyad_number participant_number individual_level_change_…¹ dyad_level_change_sc…²
+        <int>              <int>                      <dbl>                  <dbl>
+1           1                  1                      0.914                  0.154
+2           1                  2                      0.761                  0.154
+3           2                  2                      0.418                  0.418
+4           2                  1                      0.836                  0.418
+5           4                  2                      0.539                  0.204
+6           4                  1                      0.336                  0.204
+```
+
+## Example Graph - Dyad Level Change Scores
+<img width="471" alt="Screenshot 2025-05-09 at 8 45 42 PM" src="https://github.com/user-attachments/assets/3d4a5cbe-ef00-47af-9ec6-5f3c785b4947" />
+
+## Output file
+- [Change_Scores.csv](https://github.com/Gabbers18/Applied_Project/blob/main/Results/Change_Scores.csv)
 
 ## Troubleshooting
 
